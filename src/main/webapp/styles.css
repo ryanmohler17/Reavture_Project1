@@ -1,0 +1,73 @@
+@import url(https://fonts.googleapis.com/css?family=Poppins);
+
+:root {
+    --clr-background-primary: #1c1c1c;
+    --clr-background-secondary: #292929;
+    --clr-background-tertiary: #0f0f0f;
+
+    --clr-main-primary: #d47d32;
+    --clr-main-secondary: #eb9041;
+    --clr-main-tertiary: #bc7232;
+
+    --clr-success-primary: #75ce7e;
+    --clr-success-secondary: #85e88f;
+    --clr-success-tertiary: #67bb6f;
+
+    --clr-failed-primary: #bf434c;
+    --clr-failed-secondary: #cb4d56;
+    --clr-failed-tertiary: #b53941;
+
+
+    --clr-white: #f1f1f1;
+}
+
+body {
+    color: var(--clr-white);
+    font-family: "Poppins", sans-serif;
+}
+
+#login {
+    border: 2px solid var(--clr-background-tertiary);
+    background-color: var(--clr-background-secondary);
+    box-shadow: 2px 2px var(--clr-background-tertiary);
+}
+
+.nav {
+    background-color: var(--clr-main-primary);
+}
+
+body {
+    background-color: var(--clr-background-primary);
+}
+
+.btn-submit {
+    background-color: var(--clr-success-primary);
+}
+
+.btn-error {
+    background-color: var(--clr-failed-primary);
+}
+
+.btn {
+    border: 2px solid var(--clr-background-tertiary);
+    border-radius: .5em;
+}
+
+footer {
+    border-top: 2px solid var(--clr-background-tertiary);
+    background-color: var(--clr-background-secondary);
+}
+
+#employee-main > div {
+    border: 2px solid var(--clr-background-tertiary);
+    background-color: var(--clr-background-secondary);
+}
+
+a {
+    color: var(--clr-white);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
