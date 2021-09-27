@@ -27,13 +27,13 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     margin: 0px;
 }
 
 main {
     width: 80%;
     margin: 0 auto;
+    flex: 1;
 }
 
 .center {
@@ -57,19 +57,28 @@ footer {
     display: block;
 }
 
-#employee-main {
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0 -2em;
+}
+
+#reimbursement {
     display: flex;
     justify-content: space-between;
 }
 
-#employee-main > div {
-    width: 30%;
-    margin: .5em 0;
-    padding: 0 1em;
+.add-button {
+    width: 2.5em;
+    height: 2.5em;
+    margin: auto 0;
 }
 
-#employee-main > div + div {
-    margin-left: 6%;
+.row > * {
+    margin: .5em 2em;
+    padding: 0 1em;
+    flex: 1;
 }
 
 .form-item {

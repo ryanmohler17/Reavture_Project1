@@ -58,6 +58,14 @@ footer {
     background-color: var(--clr-background-secondary);
 }
 
+.add-button {
+    border: 2px solid var(--clr-background-tertiary);
+    background-color: var(--clr-main-primary);
+    font-size: 1.2em;
+    color: var(--clr-white);
+    border-radius: 1em;
+}
+
 #employee-main > div {
     border: 2px solid var(--clr-background-tertiary);
     background-color: var(--clr-background-secondary);
