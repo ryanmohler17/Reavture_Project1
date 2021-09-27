@@ -73,6 +73,10 @@ footer {
     width: 2.5em;
     height: 2.5em;
     margin: auto 0;
+    align-self: flex-end;
+    position: relative;
+    top: .5em;
+    right: .5em;
 }
 
 .row > * {

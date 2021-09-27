@@ -29,7 +29,7 @@
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin</artifactId>
-      <version>3.13.12</version>
+      <version>4.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.jetty</groupId>

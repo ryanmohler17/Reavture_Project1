@@ -30,6 +30,6 @@ public class ApiServlet extends HttpServlet {
                 .get("/", context -> {
 
                 })
-                .servlet();
+                .javalinServlet();
     }
 }
