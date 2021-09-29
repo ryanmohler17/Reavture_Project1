@@ -1,5 +1,7 @@
 package com.ryan;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.javalin.Javalin;
 import io.javalin.http.JavalinServlet;
 
@@ -45,7 +47,11 @@ public class MainServlet extends HttpServlet {
                     context.html(login);
                 })
                 .post("/login", context -> {
-
+                    context.contentType("application/json");
+                    JsonObject jsonObject = JsonParser.parseString(context.body()).getAsJsonObject();
+                    String username = jsonObject.get("username").getAsString();
+                    String password = jsonObject.get("password").getAsString();
+                    context.result("{\"test\": true}");
                 })
                 .get("/public/{item}", context -> {
                     String path = getServletContext().getRealPath(context.pathParam("item"));
