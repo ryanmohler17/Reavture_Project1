@@ -1,6 +1,8 @@
 package com.ryan.models;
 
 import static org.junit.Assert.*;
+
+import com.ryan.models.User;
 import org.junit.Test;
 
 public class UserModelTest {
