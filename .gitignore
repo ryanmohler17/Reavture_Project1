@@ -1,3 +1,5 @@
 .idea/
 layout
 target/
+
+src/main/webapp/WEB-INF/db.properties
