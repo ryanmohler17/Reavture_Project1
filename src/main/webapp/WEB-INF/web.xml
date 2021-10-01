@@ -8,8 +8,16 @@
     <servlet-name>Main</servlet-name>
     <servlet-class>com.ryan.MainServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>Api</servlet-name>
+    <servlet-class>com.ryan.ApiServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>Main</servlet-name>
     <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Api</servlet-name>
+    <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
 </web-app>

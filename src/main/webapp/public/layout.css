@@ -1,7 +1,14 @@
 .nav {
     display: flex;
     justify-content: space-between;
-    padding: 1em 1em;
+}
+
+.nav li {
+    padding: .5em 1em;
+}
+
+#logo > svg {
+    height: 20px;
 }
 
 .nav-list {
@@ -15,9 +22,9 @@
     list-style: none;
 }
 
-.nav-list li + li {
+/*.nav-list li + li {
     margin-left: 1em;
-}
+}*/
 
 html {
     height: 100%;

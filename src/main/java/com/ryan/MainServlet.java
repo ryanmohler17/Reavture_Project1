@@ -75,6 +75,7 @@ public class MainServlet extends HttpServlet {
                 .get("/", context -> {
                     int login = checkLogin(properties, context);
                     if (login == -1) {
+                        context.redirect("login");
                         return;
                     }
 
@@ -87,12 +88,17 @@ public class MainServlet extends HttpServlet {
                 })
                 .get("/login", context -> {
                     String path = getServletContext().getRealPath("login.html");
+
                     String login = String.join("\n", Files.readAllLines(Paths.get(path)));
                     context.html(login);
                 })
                 .post("/login", loginHandler)
+                .get("/logout", context -> {
+                    context.redirect("/ers/login");
+                    context.removeCookie("token");
+                })
                 .get("/public/{item}", context -> {
-                    String path = getServletContext().getRealPath(context.pathParam("item"));
+                    String path = getServletContext().getRealPath("public/" + context.pathParam("item"));
                     String file = String.join("\n", Files.readAllLines(Paths.get(path)));
                     context.result(file);
                     String[] split = path.split("\\.");
@@ -102,10 +108,9 @@ public class MainServlet extends HttpServlet {
         super.init(config);
     }
 
-    private int checkLogin(Properties properties, Context context) throws ParseException, JOSEException {
+    public static int checkLogin(Properties properties, Context context) throws ParseException, JOSEException {
         String token = context.cookie("token");
         if (token == null) {
-            context.redirect("login");
             return -1;
         }
 
@@ -115,7 +120,6 @@ public class MainServlet extends HttpServlet {
 
         if (!signedJWT.verify(verifier) || !new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime())) {
             context.removeCookie("token");
-            context.redirect("login");
             return -1;
         }
 
