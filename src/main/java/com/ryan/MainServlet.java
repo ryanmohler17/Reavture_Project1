@@ -2,7 +2,11 @@ package com.ryan;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -13,6 +17,7 @@ import com.ryan.data.SqlImageAccess;
 import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
 import com.ryan.handlers.LoginHandler;
+import com.ryan.models.StoredImage;
 import com.ryan.models.User;
 import com.ryan.models.UserType;
 import io.javalin.Javalin;
@@ -27,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -65,7 +71,13 @@ public class MainServlet extends HttpServlet {
         connector = new DataConnector(properties);
         ImageDataAccess imageDataAccess = new SqlImageAccess(connector);
         UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(StoredImage.class, new JsonSerializer<StoredImage>() {
+                    @Override
+                    public JsonElement serialize(StoredImage src, Type typeOfSrc, JsonSerializationContext context) {
+                        return new JsonPrimitive(src.getImage64());
+                    }
+                }).setPrettyPrinting().create();
 
         LoginHandler loginHandler = new LoginHandler(userDataAccess, gson, Base64.getDecoder().decode(properties.getProperty("user.secret")));
 

@@ -13,7 +13,7 @@ public class User {
     private String firstName;
     private String lastName;
     private UserType userType;
-    private transient StoredImage avatar;
+    private StoredImage avatar;
 
     public User() {
 

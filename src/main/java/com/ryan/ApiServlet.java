@@ -2,7 +2,11 @@ package com.ryan;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.ryan.data.DataConnector;
 import com.ryan.data.ImageDataAccess;
 import com.ryan.data.RequestDataAccess;
@@ -10,6 +14,7 @@ import com.ryan.data.SqlImageAccess;
 import com.ryan.data.SqlRequestAccess;
 import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
+import com.ryan.handlers.RequestsHandler;
 import com.ryan.models.StoredImage;
 import com.ryan.models.User;
 import io.javalin.Javalin;
@@ -23,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Properties;
 
 public class ApiServlet extends HttpServlet {
@@ -54,7 +60,15 @@ public class ApiServlet extends HttpServlet {
         ImageDataAccess imageDataAccess = new SqlImageAccess(connector);
         UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess);
         RequestDataAccess requestDataAccess = new SqlRequestAccess(connector, imageDataAccess);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().setPrettyPrinting()
+                .registerTypeAdapter(StoredImage.class, new JsonSerializer<StoredImage>() {
+                    @Override
+                    public JsonElement serialize(StoredImage src, Type typeOfSrc, JsonSerializationContext context) {
+                        return new JsonPrimitive(src.getImage64());
+                    }
+                }).create();
+
+        RequestsHandler requestsHandler = new RequestsHandler(properties, userDataAccess, requestDataAccess, gson);
 
         javalinServlet = Javalin.createStandalone()
                 .get("/api/user", context -> {
@@ -78,6 +92,7 @@ public class ApiServlet extends HttpServlet {
                     context.contentType("application/json");
                     context.result(gson.toJson(returnObj));
                 })
+                .get("/api/requests", requestsHandler)
                 .javalinServlet();
     }
 }

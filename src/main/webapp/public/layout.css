@@ -121,10 +121,10 @@ footer {
     margin: 0 -2em;
 }
 
-#reimbursement {
+/*#reimbursement {
     display: flex;
     justify-content: space-between;
-}
+}*/
 
 .add-button {
     width: 2.5em;

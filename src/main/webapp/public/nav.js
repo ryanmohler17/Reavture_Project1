@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function () {
     document.querySelectorAll(".nav li").forEach(item => {
-        console.log(item);
         if (item.querySelector("a")) {
             item.addEventListener("click", function () {
                 window.location.href = item.querySelector("a").href;
@@ -8,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     });
 
-    var resp = await fetch("api/user/");
+    var resp = await fetch("/ers/api/user/");
     let data = await resp.json();
 
     if (data.error) {
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     let nav = document.querySelector("#nav-account");
     nav.innerHTML = "";
-    console.log(data);
     let profile = document.createElement("li");
     profile.id = "nav-profile"
     if (data.user.avatar) {
