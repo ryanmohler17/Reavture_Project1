@@ -2,6 +2,8 @@ package com.ryan.models;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
+import java.util.UUID;
+
 public class User {
 
     private int id = -1;
@@ -11,6 +13,7 @@ public class User {
     private String firstName;
     private String lastName;
     private UserType userType;
+    private transient StoredImage avatar;
 
     public User() {
 
@@ -79,6 +82,14 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public StoredImage getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(StoredImage avatar) {
+        this.avatar = avatar;
     }
 
     public boolean verifyPassword(String password) {

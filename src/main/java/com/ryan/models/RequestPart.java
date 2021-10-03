@@ -2,14 +2,15 @@ package com.ryan.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class RequestPart {
 
-    private int id;
+    private int id = -1;
     private double amount;
     private String description;
     private RequestType type;
-    private List<String> images = new ArrayList<>();
+    private List<StoredImage> images = new ArrayList<>();
     private double rate;
 
     public RequestPart(double amount, String description, RequestType type) {
@@ -50,11 +51,11 @@ public class RequestPart {
         this.type = type;
     }
 
-    public List<String> getImages() {
+    public List<StoredImage> getImages() {
         return images;
     }
 
-    public void setImages(List<String> images) {
+    public void setImages(List<StoredImage> images) {
         this.images = images;
     }
 

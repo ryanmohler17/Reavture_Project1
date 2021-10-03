@@ -8,6 +8,8 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import com.ryan.data.DataConnector;
+import com.ryan.data.ImageDataAccess;
+import com.ryan.data.SqlImageAccess;
 import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
 import com.ryan.handlers.LoginHandler;
@@ -60,7 +62,8 @@ public class MainServlet extends HttpServlet {
             return;
         }
         connector = new DataConnector(properties);
-        UserDataAccess userDataAccess = new SqlUserAccess(connector);
+        ImageDataAccess imageDataAccess = new SqlImageAccess(connector);
+        UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         LoginHandler loginHandler = new LoginHandler(userDataAccess, gson, Base64.getDecoder().decode(properties.getProperty("user.secret")));

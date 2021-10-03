@@ -87,3 +87,8 @@ a:hover {
 .nav a:hover {
     text-decoration: none;
 }
+
+#nav-profile > img {
+    border-radius: 1.5em;
+    border: 1px solid var(--clr-white);
+}

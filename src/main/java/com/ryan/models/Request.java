@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Request {
 
-    private int id;
+    private int id = -1;
     private int employee;
     private Date submitted;
     private RequestStatus status;

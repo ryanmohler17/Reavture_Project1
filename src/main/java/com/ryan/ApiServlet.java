@@ -4,8 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.ryan.data.DataConnector;
+import com.ryan.data.ImageDataAccess;
+import com.ryan.data.RequestDataAccess;
+import com.ryan.data.SqlImageAccess;
+import com.ryan.data.SqlRequestAccess;
 import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
+import com.ryan.models.StoredImage;
+import com.ryan.models.User;
 import io.javalin.Javalin;
 import io.javalin.http.JavalinServlet;
 
@@ -45,7 +51,9 @@ public class ApiServlet extends HttpServlet {
             return;
         }
         connector = new DataConnector(properties);
-        UserDataAccess userDataAccess = new SqlUserAccess(connector);
+        ImageDataAccess imageDataAccess = new SqlImageAccess(connector);
+        UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess);
+        RequestDataAccess requestDataAccess = new SqlRequestAccess(connector, imageDataAccess);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         javalinServlet = Javalin.createStandalone()
@@ -57,8 +65,12 @@ public class ApiServlet extends HttpServlet {
                         returnObj.addProperty("error", "User is not logged in");
                         status = 401;
                     } else {
-                        JsonObject userJson = gson.toJsonTree(userDataAccess.getItem(user)).getAsJsonObject();
-                        userJson.addProperty("hasAvatar", new File(config.getServletContext().getRealPath("public/upload/icons/" + user + ".png")).exists());
+                        User userObj = userDataAccess.getItem(user);
+                        JsonObject userJson = gson.toJsonTree(userObj).getAsJsonObject();
+                        StoredImage storedImage = userObj.getAvatar();
+                        if (storedImage != null) {
+                            userJson.addProperty("avatar", userObj.getAvatar().getImage64());
+                        }
                         returnObj.add("user", userJson);
                         status = 200;
                     }

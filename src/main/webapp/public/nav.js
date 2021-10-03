@@ -19,9 +19,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     nav.innerHTML = "";
     console.log(data);
     let profile = document.createElement("li");
-    if (data.user.hasAvatar) {
+    profile.id = "nav-profile"
+    if (data.user.avatar) {
         let img = document.createElement("img");
-        img.src = "/ers/public/upload/icons/" + data.user.id + ".png";
+        img.src = data.user.avatar;
         profile.appendChild(img);
     }
 
@@ -31,6 +32,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     profile.appendChild(link);
 
+    profile.addEventListener("click", function () {
+        window.location.href = profile.querySelector("a").href;
+    });
+
     nav.appendChild(profile)
 
     let logout = document.createElement("li");
@@ -39,5 +44,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     logoutLink.text = "Logout"
 
     logout.appendChild(logoutLink)
+    logout.addEventListener("click", function () {
+        window.location.href = logout.querySelector("a").href;
+    });
     nav.appendChild(logout);
 });
