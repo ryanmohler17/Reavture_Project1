@@ -14,6 +14,7 @@ import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
 import com.ryan.handlers.LoginHandler;
 import com.ryan.models.User;
+import com.ryan.models.UserType;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.JavalinServlet;
@@ -77,11 +78,17 @@ public class MainServlet extends HttpServlet {
                     }
 
                     User user = userDataAccess.getItem(login);
-                    JsonObject json = new JsonObject();
-                    json.addProperty("login", true);
-                    json.addProperty("username", user.getUserName());
-                    context.contentType("application/json");
-                    context.result(gson.toJson(json));
+                    if (user.getUserType().equals(UserType.EMPLOYEE)) {
+                        String path = getServletContext().getRealPath("employee.html");
+
+                        String employee = String.join("\n", Files.readAllLines(Paths.get(path)));
+                        context.html(employee);
+                    } else {
+                        String path = getServletContext().getRealPath("manager.html");
+
+                        String manager = String.join("\n", Files.readAllLines(Paths.get(path)));
+                        context.html(manager);
+                    }
                 })
                 .get("/login", context -> {
                     String path = getServletContext().getRealPath("login.html");

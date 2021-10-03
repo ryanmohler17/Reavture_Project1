@@ -92,3 +92,35 @@ a:hover {
     border-radius: 1.5em;
     border: 1px solid var(--clr-white);
 }
+
+#alerts > div {
+    border: 1px solid var(--clr-background-tertiary);
+    border-right: none;
+}
+
+.alert-bad {
+    background-color: var(--clr-failed-primary);
+}
+
+.alert-good {
+    background-color: var(--clr-success-primary);
+}
+
+.alert-neutral {
+    background-color: var(--clr-background-secondary);
+}
+
+.alert-bad > h3 {
+    background-color: var(--clr-failed-secondary);
+    border-bottom: 1px solid var(--clr-failed-tertiary);
+}
+
+.alert-good > h3 {
+    background-color: var(--clr-success-secondary);
+    border-bottom: 1px solid var(--clr-success-tertiary);
+}
+
+.alert-neutral > h3 {
+    background-color: var(--clr-background-primary);
+    border-bottom: 1px solid var(--clr-success-tertiary);
+}

@@ -121,8 +121,11 @@ public class SqlUserAccess implements UserDataAccess {
             PreparedStatement statement = c.prepareStatement("SELECT id, first_name, last_name, username, email_address, password, user_type FROM \"user\" WHERE username = ?");
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
-            return getUserFromResultSet(resultSet);
+            if (resultSet.next()) {
+                return getUserFromResultSet(resultSet);
+            } else {
+                return null;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

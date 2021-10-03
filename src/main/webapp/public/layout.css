@@ -7,12 +7,53 @@
     padding: .5em 1em;
 }
 
+#logo {
+    padding-right: 5px;
+}
+
 #logo > svg {
     height: 20px;
 }
 
 #nav-profile {
     display: flex;
+}
+
+#alerts {
+    position: absolute;
+    top: 5em;
+    right: 0;
+    width: 20%;
+}
+
+#alerts > div {
+    margin-bottom: 1em;
+    transition: height 3s ease 0s;
+}
+
+#alerts > div > h3 {
+    margin: 0;
+    padding: .5em 1em;
+}
+
+#alerts > div > p {
+    margin: 0;
+    padding: .5em 1em;
+}
+
+.alert-hide {
+    animation-duration: 3s;
+    animation-name: hide-alert;
+}
+
+@keyframes hide-alert {
+    from {
+        height: auto;
+    }
+
+    to {
+        height: 0;
+    }
 }
 
 #nav-profile > img {
