@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Employee</title>
+    <link href="public/layout.css" rel="stylesheet" />
+    <link href="public/styles.css" rel="stylesheet" />
+    <script src="public/alerts.js"></script>
+    <script src="public/request.js"></script>
+    <script src="public/nav.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav class="nav">
+            <ul class="nav-list" id="nav-navigation">
+                <li style="display: flex"><a href="/ers/" id="logo">
+                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="money-check-alt"
+                            class="svg-inline--fa fa-money-check-alt fa-w-20" role="img"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                            <path fill="currentColor"
+                                d="M608 32H32C14.33 32 0 46.33 0 64v384c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V64c0-17.67-14.33-32-32-32zM176 327.88V344c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-16.29c-11.29-.58-22.27-4.52-31.37-11.35-3.9-2.93-4.1-8.77-.57-12.14l11.75-11.21c2.77-2.64 6.89-2.76 10.13-.73 3.87 2.42 8.26 3.72 12.82 3.72h28.11c6.5 0 11.8-5.92 11.8-13.19 0-5.95-3.61-11.19-8.77-12.73l-45-13.5c-18.59-5.58-31.58-23.42-31.58-43.39 0-24.52 19.05-44.44 42.67-45.07V152c0-4.42 3.58-8 8-8h16c4.42 0 8 3.58 8 8v16.29c11.29.58 22.27 4.51 31.37 11.35 3.9 2.93 4.1 8.77.57 12.14l-11.75 11.21c-2.77 2.64-6.89 2.76-10.13.73-3.87-2.43-8.26-3.72-12.82-3.72h-28.11c-6.5 0-11.8 5.92-11.8 13.19 0 5.95 3.61 11.19 8.77 12.73l45 13.5c18.59 5.58 31.58 23.42 31.58 43.39 0 24.53-19.05 44.44-42.67 45.07zM416 312c0 4.42-3.58 8-8 8H296c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h112c4.42 0 8 3.58 8 8v16zm160 0c0 4.42-3.58 8-8 8h-80c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h80c4.42 0 8 3.58 8 8v16zm0-96c0 4.42-3.58 8-8 8H296c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h272c4.42 0 8 3.58 8 8v16z">
+                            </path>
+                        </svg></a>
+                    ERS
+                </li>
+                <li><a href="/ers/">Home</a></li>
+            </ul>
+            <ul class="nav-list" id="nav-account">
+                <li><a href="/ers/login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="row" id="expence-info">
+            <div class="card">
+                <h3>Total amount</h3>
+                <p>$<span id="total">0.00</span></p>
+            </div>
+            <div class="card">
+                <h3>Expences</h3>
+                <p id="expence-amount">0</p>
+            </div>
+        </div>
+        <div class="card" id="expences">
+            <div>
+                <h2>Expences</h2>
+                <button class="add-button" id="add-part">+</button>
+            </div>
+            <table>
+                <tr>
+                    <th style="width: 20%;">Amount</th>
+                    <th style="width: 20%;">Type</th>
+                    <th>Description</th>
+                </tr>
+            </table>
+        </div>
+        <div class="form-buttons">
+            <button class="btn btn-submit" onclick="hanldeFinalSubmit()">Submit</button>
+        </div>
+    </main>
+    <div id="modal-wrapper" class="modal-wrapper hidden">
+        <div class="overlay"></div>
+        <div class="modal-wrapper scroll">
+            <div class="modal-content">
+                <div class="modal-content-wrapper">
+                    <div class="modal" id="add-modal">
+                        <div class="content">
+                            <h2 style="margin-top: 0;">Add Expence</h2>
+                            <label class="form-item">
+                                <span>Description</span>
+                                <textarea id="desc"></textarea>
+                            </label>
+                            <div class="row" style="margin: 0 -2em;">
+                                <label class="form-item">
+                                    <span>Amount</span>
+                                    <span id="amount" style="width: 100%; display: flex;"><input style="flex: 1;"
+                                            type="number" /></span>
+                                </label>
+                                <label class="form-item">
+                                    <span>Expence Type</span>
+                                    <select id="type">
+                                        <option value="select" selected disabled hidden>Select Type</option>
+                                        <optgroup label="Travel">
+                                            <option value="miles">Car - Miles</option>
+                                            <option value="gas">Car - Cost</option>
+                                            <option value="plane">Plane</option>
+                                        </optgroup>
+                                        <option value="equip">Equipment</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div id="images">
+                                <h3>Images</h3>
+                                <div class="card drop" id="image-drop">
+                                    <p style="margin-bottom: .5em;">Drag and drop files</p>
+                                    <p style="margin-bottom: .5em; margin-top: 0;">to upload or</p>
+                                    <button style="margin-top: 0;" class="btn btn-submit upload-button" onclick="handleUploadButton()">Upload files</button>
+                                </div>
+                                <input multiple type="file" style="display: none;" id="file-input" />
+                                <div class="form-buttons">
+                                    <button id="lower-upload" style="margin-top: 0;" class="btn btn-submit upload-button hidden" onclick="handleUploadButton()">Upload
+                                        files</button>
+                                </div>
+                            </div>
+                            <div class="form-buttons">
+                                <button id="modal-clear" onclick="clearModal()" class="btn btn-error">Clear</button>
+                                <button id="modal-submit" onclick="handleSubmit()" class="btn btn-submit">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="alerts">
+    </div>
+    <footer>
+        <h3>Footer</h3>
+    </footer>
+</body>
+
+</html>
