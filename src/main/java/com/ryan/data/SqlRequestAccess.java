@@ -33,11 +33,16 @@ public class SqlRequestAccess implements RequestDataAccess {
         int id = item.getId();
         if (id == -1) {
             try (Connection connection = connector.newConnection()) {
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO reimbursement_request (employee, submitted, status, last_update) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO reimbursement_request (employee, submitted, status, last_update, resolved_by) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 statement.setInt(1, item.getEmployee());
                 statement.setDate(2, new Date(item.getSubmitted().getTime()));
                 statement.setInt(3, item.getStatus().ordinal());
                 statement.setDate(4, new Date(item.getLastUpdate().getTime()));
+                if (item.getResolvedBy() != 0) {
+                    statement.setInt(5, item.getResolvedBy());
+                } else {
+                    statement.setObject(5, null);
+                }
                 statement.execute();
                 ResultSet resultSet = statement.getGeneratedKeys();
                 resultSet.next();
@@ -49,12 +54,17 @@ public class SqlRequestAccess implements RequestDataAccess {
             }
         } else {
             try (Connection connection = connector.newConnection()) {
-                PreparedStatement statement = connection.prepareStatement("UPDATE reimbursement_request SET employee = ?, submitted = ?, status = ?, last_update = ? WHERE id = ?");
+                PreparedStatement statement = connection.prepareStatement("UPDATE reimbursement_request SET employee = ?, submitted = ?, status = ?, last_update = ?, resolved_by = ? WHERE id = ?");
                 statement.setInt(1, item.getEmployee());
                 statement.setDate(2, new Date(item.getSubmitted().getTime()));
                 statement.setInt(3, item.getStatus().ordinal());
                 statement.setDate(4, new Date(item.getLastUpdate().getTime()));
-                statement.setInt(5, id);
+                if (item.getResolvedBy() != 0) {
+                    statement.setInt(5, item.getResolvedBy());
+                } else {
+                    statement.setObject(5, null);
+                }
+                statement.setInt(6, id);
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -70,7 +80,7 @@ public class SqlRequestAccess implements RequestDataAccess {
     @Override
     public Request getItem(Integer item) {
         try (Connection connection = connector.newConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT id, employee, submitted, status, last_update FROM reimbursement_request WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT id, employee, submitted, status, last_update, resolved_by FROM reimbursement_request WHERE id = ?");
             statement.setInt(1, item);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
@@ -85,7 +95,7 @@ public class SqlRequestAccess implements RequestDataAccess {
     public List<Request> getAllItems() {
         try (Connection connection = connector.newConnection()) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT id, employee, submitted, status, last_update FROM reimbursement_request");
+            ResultSet resultSet = statement.executeQuery("SELECT id, employee, submitted, status, last_update, resolved_by FROM reimbursement_request");
             List<Request> requests = new ArrayList<>();
             while (resultSet.next()) {
                 requests.add(requestFromResultSet(resultSet));
@@ -207,7 +217,7 @@ public class SqlRequestAccess implements RequestDataAccess {
     @Override
     public List<Request> getEmployeeRequests(int employeeId) {
         try (Connection connection = connector.newConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT id, employee, submitted, status, last_update FROM reimbursement_request WHERE employee = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT id, employee, submitted, status, last_update, resolved_by FROM reimbursement_request WHERE employee = ?");
             statement.setInt(1, employeeId);
             ResultSet resultSet = statement.executeQuery();
             List<Request> requests = new ArrayList<>();
@@ -224,7 +234,7 @@ public class SqlRequestAccess implements RequestDataAccess {
     @Override
     public List<Request> getEmployeeRequests(int employeeId, int start, int limit) {
         try (Connection connection = connector.newConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT id, employee, submitted, status, last_update FROM reimbursement_request WHERE employee = ? LIMIT ? OFFSET ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT id, employee, submitted, status, last_update, resolved_by FROM reimbursement_request WHERE employee = ? LIMIT ? OFFSET ?");
             statement.setInt(1, employeeId);
             statement.setInt(2, limit);
             statement.setInt(3, start);
@@ -243,6 +253,11 @@ public class SqlRequestAccess implements RequestDataAccess {
     private Request requestFromResultSet(ResultSet resultSet) throws SQLException {
         Request request = new Request(resultSet.getInt("employee"), resultSet.getDate("submitted"),
                 RequestStatus.values()[resultSet.getInt("status")], resultSet.getDate("last_update"));
+
+        int resolved = resultSet.getInt("resolved_by");
+        if (!resultSet.wasNull()) {
+            request.setResolvedBy(resolved);
+        }
 
         int id = resultSet.getInt("id");
         request.setId(id);

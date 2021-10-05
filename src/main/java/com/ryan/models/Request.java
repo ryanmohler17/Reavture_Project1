@@ -12,6 +12,7 @@ public class Request {
     private RequestStatus status;
     private List<RequestPart> parts = new ArrayList<>();
     private Date lastUpdate;
+    private int resolvedBy = -1;
 
     public Request(int employee, Date submitted, RequestStatus status, Date lastUpdate) {
         this.employee = employee;
@@ -66,5 +67,13 @@ public class Request {
 
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public int getResolvedBy() {
+        return resolvedBy;
+    }
+
+    public void setResolvedBy(int resolvedBy) {
+        this.resolvedBy = resolvedBy;
     }
 }

@@ -14,7 +14,7 @@ import com.ryan.data.SqlImageAccess;
 import com.ryan.data.SqlRequestAccess;
 import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
-import com.ryan.handlers.RequestsHandler;
+import com.ryan.handlers.GetRequestsHandler;
 import com.ryan.models.StoredImage;
 import com.ryan.models.User;
 import io.javalin.Javalin;
@@ -68,7 +68,7 @@ public class ApiServlet extends HttpServlet {
                     }
                 }).create();
 
-        RequestsHandler requestsHandler = new RequestsHandler(properties, userDataAccess, requestDataAccess, gson);
+        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, userDataAccess, requestDataAccess, gson);
 
         javalinServlet = Javalin.createStandalone()
                 .get("/api/user", context -> {
