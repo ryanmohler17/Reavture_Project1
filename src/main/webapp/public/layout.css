@@ -27,37 +27,30 @@
 }
 
 #alerts > div {
+    transition: height 1s ease-in-out, transform 1s ease-in-out;
+    overflow: hidden;
+}
+
+#alerts > div > div {
     margin-bottom: 1em;
 }
 
-#alerts > div.hide {
-    height: 0;
-    transition: 1s ease height;
-}
-
-#alerts > div > h3 {
+#alerts > div > div > h3 {
     margin: 0;
     padding: .5em 1em;
 }
 
-#alerts > div > p {
+#alerts > div > div > p {
     margin: 0;
     padding: .5em 1em;
+}
+
+.alert-show {
+    transform: translateX(100%);
 }
 
 .alert-hide {
-    animation-duration: 3s;
-    animation-name: hide-alert;
-}
-
-@keyframes hide-alert {
-    from {
-        height: auto;
-    }
-
-    to {
-        height: 0;
-    }
+    height: 0px !important;
 }
 
 #nav-profile > img {
@@ -89,6 +82,7 @@ body {
     display: flex;
     flex-direction: column;
     margin: 0px;
+    overflow-x: hidden;
 }
 
 main {

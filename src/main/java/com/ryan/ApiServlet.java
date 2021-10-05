@@ -68,7 +68,7 @@ public class ApiServlet extends HttpServlet {
                     }
                 }).create();
 
-        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, userDataAccess, requestDataAccess, gson);
+        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, requestDataAccess, gson);
 
         javalinServlet = Javalin.createStandalone()
                 .get("/api/user", context -> {

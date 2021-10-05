@@ -19,8 +19,10 @@ class Alert {
     }
 
     getHtml(document) {
+        let parent = document.createElement("div");
         let div = document.createElement("div");
         div.classList.add("alert-" + this.#type);
+        parent.classList.add("alert-show");
         if (this.#header) {
             let header = document.createElement("h3");
             header.innerHTML = this.#header;
@@ -30,7 +32,8 @@ class Alert {
         console.log("content: " + this.#content)
         p.innerHTML = this.#content;
         div.appendChild(p)
-        return div;
+        parent.appendChild(div);
+        return parent;
     }
 
 }
@@ -38,30 +41,23 @@ class Alert {
 function pushAlert(alert, timeout = 5000) {
     let alertCont = alert.getHtml(document);
     document.querySelector("#alerts").appendChild(alertCont);
+    window.setTimeout(() => {
+        alertCont.classList.remove("alert-show");
+    }, 100);
     if (timeout > 0) {
         window.setTimeout(() => {
-            alertCont.remove();
+            retractElm(alertCont);
+            window.setTimeout(() => {
+                alertCont.remove();
+            }, 2000);
+            //alertCont.remove();
         }, timeout);
     }
 }
 
-function retractElm(elm, transition) {
-    var style = window.getComputedStyle(elm, null).getPropertyValue('font-size');
-    var fontSize = parseFloat(style); 
-    let height = elm.clientHeight;
-    let amount = height / (transition / 10);
-    let font = fontSize / (transition / 10);
-    let interval = window.setInterval(() => {
-        let set = height - amount;
-        let setFont = fontSize = font;
-        //console.log("setting height to " + set)
-        elm.style.height = set + "px";
-        elm.style.fontSize = set + "px";
-        height = set;
-        fontSize = setFont;
-    }, 10);
-
+function retractElm(elm) {
+    elm.style.height = elm.clientHeight + 'px';
     window.setTimeout(() => {
-        window.clearInterval(interval);
-    }, transition);
+        elm.classList.add('alert-hide');
+    }, 100);
 }

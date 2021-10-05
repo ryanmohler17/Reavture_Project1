@@ -18,12 +18,10 @@ import java.util.Properties;
 public class GetRequestsHandler implements Handler {
 
     private Properties properties;
-    private UserDataAccess userDataAccess;
     private RequestDataAccess requestDataAccess;
     private Gson gson;
-    public GetRequestsHandler(Properties properties, UserDataAccess userDataAccess, RequestDataAccess requestDataAccess, Gson gson) {
+    public GetRequestsHandler(Properties properties, RequestDataAccess requestDataAccess, Gson gson) {
         this.properties = properties;
-        this.userDataAccess = userDataAccess;
         this.requestDataAccess = requestDataAccess;
         this.gson = gson;
     }

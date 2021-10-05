@@ -93,7 +93,7 @@ a:hover {
     border: 1px solid var(--clr-white);
 }
 
-#alerts > div {
+#alerts > div > div {
     border: 1px solid var(--clr-background-tertiary);
     border-right: none;
 }

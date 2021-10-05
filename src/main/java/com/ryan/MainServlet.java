@@ -102,6 +102,25 @@ public class MainServlet extends HttpServlet {
                         context.html(manager);
                     }
                 })
+                .get("/request", context -> {
+                    int login = checkLogin(properties, context);
+                    if (login == -1) {
+                        context.redirect("login");
+                        return;
+                    }
+
+                    User user = userDataAccess.getItem(login);
+
+                    if (!user.getUserType().equals(UserType.EMPLOYEE)) {
+                        context.redirect("/ers/");
+                        return;
+                    }
+
+                    String path = getServletContext().getRealPath("request.html");
+
+                    String request = String.join("\n", Files.readAllLines(Paths.get(path)));
+                    context.html(request);
+                })
                 .get("/login", context -> {
                     String path = getServletContext().getRealPath("login.html");
 
