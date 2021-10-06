@@ -186,7 +186,7 @@ function clearModal() {
 }
 
 async function hanldeFinalSubmit() {
-    if (parts.length == 0) {
+    if (parts.length === 0) {
         let alert = new Alert(AlertType.Failed, "Please add at least one expence");
         alert.setHeader("Invalid form");
         pushAlert(alert);

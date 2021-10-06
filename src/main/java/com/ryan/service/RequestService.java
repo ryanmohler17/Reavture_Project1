@@ -1,4 +1,8 @@
-package com.ryan.models;
+package com.ryan.service;
+
+import com.ryan.models.Request;
+import com.ryan.models.RequestPart;
+import com.ryan.models.RequestType;
 
 import java.util.List;
 

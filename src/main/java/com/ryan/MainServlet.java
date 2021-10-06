@@ -150,7 +150,12 @@ public class MainServlet extends HttpServlet {
         }
 
         byte[] secret = Base64.getDecoder().decode(properties.getProperty("user.secret"));
-        SignedJWT signedJWT = SignedJWT.parse(token);
+        SignedJWT signedJWT;
+        try {
+            signedJWT = SignedJWT.parse(token);
+        } catch (ParseException e) {
+            return -1 ;
+        }
         JWSVerifier verifier = new MACVerifier(secret);
 
         if (!signedJWT.verify(verifier) || !new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime())) {
