@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     profile.id = "nav-profile"
     if (data.user.avatar) {
         let img = document.createElement("img");
-        img.src = data.user.avatar;
+        img.src = "data:image/png;base64," + data.user.avatar;
         profile.appendChild(img);
     }
 

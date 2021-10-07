@@ -41,13 +41,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let amount = document.querySelector("#amount");
     let select = document.querySelector("#type");
+    let rateDiv = document.querySelector("#rate");
     select.addEventListener('change', function (e) {
         if (e.target.value === "miles") {
             let val = amount.querySelector("input").value;
             amount.innerHTML = "<input style=\"flex: 1;\" type=\"number\" value=\"" + val + "\" />";
+            let label = document.createElement("label");
+            label.classList.add("form-item");
+            let span = document.createElement("span");
+            span.innerHTML = "Rate";
+            let input = document.createElement("input");
+            input.type = "number";
+            input.id = "rate-input"
+            input.value = ".50"
+            label.appendChild(span);
+            label.appendChild(input);
+            rateDiv.appendChild(label);
+            rateDiv.classList.remove("hidden");
         } else {
             let val = amount.querySelector("input").value;
             amount.innerHTML = "$<input style=\"flex: 1;\" type=\"number\" value=\"" + val + "\" />";
+            let label = rateDiv.querySelector("label");
+            if (label) {
+                label.remove();
+                rateDiv.classList.add("hidden");
+            }
         }
     });
 
@@ -82,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function handleSubmit() {
     let type = document.querySelector("#type").value;
-    let amount = parseInt(document.querySelector("#amount > input").value);
+    let amount = parseFloat(document.querySelector("#amount > input").value);
     let description = document.querySelector("#desc").value;
 
     if (type === "select" || !description || !amount) {
@@ -92,11 +110,27 @@ function handleSubmit() {
         return;
     }
 
+    let rate = document.querySelector("#rate-input");
+    let rateVal = null;
+    if (rate) {
+        rateVal = parseFloat(rate.value);
+        if (!rateVal) {
+            let alert = new Alert(AlertType.Failed, "Please enter rate");
+            alert.setHeader("Invalid form");
+            pushAlert(alert);
+            return;
+        }
+    }
+
     let part = {
         type: type,
         description: description,
         amount: amount,
         images: images
+    }
+
+    if(rateVal) {
+        part['rate'] = rateVal;
     }
 
     parts.push(part);
@@ -113,7 +147,12 @@ function addPartToTable(part) {
     let desc = document.createElement("td");
     let type = document.createElement("td");
 
-    amount.innerHTML = part.amount;
+    if (part.type === "miles") {
+        amount.innerHTML = part.amount;
+    } else {
+        amount.innerHTML = '$' + part.amount;
+    }
+
     desc.innerHTML = part.description;
     type.innerHTML = document.querySelector("option[value=" + part.type + "]").innerHTML;
 
@@ -121,13 +160,18 @@ function addPartToTable(part) {
     tr.appendChild(type)
     tr.appendChild(desc)
 
+    let amountVal = part.amount;
+    if (part.rate) {
+        amountVal *= parseFloat(part.rate);
+    }
+
     document.querySelector("#expences > table").appendChild(tr);
 
     let totalElm = document.querySelector("#total");
-    totalElm.innerHTML = parseInt(totalElm.innerHTML) + part.amount;
+    totalElm.innerHTML = parseFloat(totalElm.innerHTML) + amountVal;
 
     let expencesElm = document.querySelector("#expence-amount");
-    expencesElm.innerHTML = parseInt(expencesElm.innerHTML) + 1;
+    expencesElm.innerHTML = parseFloat(expencesElm.innerHTML) + 1;
 }
 
 function toogleModal() {
@@ -179,13 +223,19 @@ function clearModal() {
     document.querySelector("#type").value = "select";
     document.querySelector("#amount").innerHTML = "<input style=\"flex: 1;\" type=\"number\" value=\"\" />";
     document.querySelector("#desc").value = "";
+    let rateDiv = document.querySelector("#rate");
+    rateDiv.remove();
     images = [];
     firstDrop = true;
     drop.classList.add("drop");
     document.querySelector("#lower-upload").classList.add("hidden");
 }
 
+let currentSubmit = false;
 async function hanldeFinalSubmit() {
+    if (currentSubmit) {
+        return;
+    }
     if (parts.length === 0) {
         let alert = new Alert(AlertType.Failed, "Please add at least one expence");
         alert.setHeader("Invalid form");
@@ -193,11 +243,29 @@ async function hanldeFinalSubmit() {
         return;
     }
 
-    let res = fetch("/ers/api/requests", {
+    console.log(parts);
+
+    let res = await fetch("/ers/api/requests", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(parts)
     });
+
+    console.log(res.status);
+
+    if (res.status === 200) {
+        currentSubmit = true;
+        let alert = new Alert(AlertType.Success, "Will redirect you soon");
+        alert.setHeader("Submitted request");
+        pushAlert(alert);
+        window.setTimeout(() => {
+            window.location.href = "/ers/";
+        }, 5000);
+    } else {
+        let alert = new Alert(AlertType.Failed, "An error occurred when submitting the request");
+        alert.setHeader("Failed to submit request");
+        pushAlert(alert);
+    }
 }

@@ -29,7 +29,6 @@ class Alert {
             div.appendChild(header);
         }
         let p = document.createElement("p");
-        console.log("content: " + this.#content)
         p.innerHTML = this.#content;
         div.appendChild(p)
         parent.appendChild(div);

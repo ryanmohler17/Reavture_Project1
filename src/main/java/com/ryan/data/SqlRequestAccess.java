@@ -38,7 +38,7 @@ public class SqlRequestAccess implements RequestDataAccess {
                 statement.setDate(2, new Date(item.getSubmitted().getTime()));
                 statement.setInt(3, item.getStatus().ordinal());
                 statement.setDate(4, new Date(item.getLastUpdate().getTime()));
-                if (item.getResolvedBy() != 0) {
+                if (item.getResolvedBy() > 0) {
                     statement.setInt(5, item.getResolvedBy());
                 } else {
                     statement.setObject(5, null);
