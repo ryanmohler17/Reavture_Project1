@@ -8,6 +8,8 @@ import com.ryan.data.RequestDataAccess;
 import com.ryan.data.UserDataAccess;
 import com.ryan.models.Request;
 import com.ryan.models.RequestsCounts;
+import com.ryan.models.User;
+import com.ryan.models.UserType;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
@@ -19,10 +21,13 @@ public class GetRequestsHandler implements Handler {
 
     private Properties properties;
     private RequestDataAccess requestDataAccess;
+    private UserDataAccess userDataAccess;
     private Gson gson;
-    public GetRequestsHandler(Properties properties, RequestDataAccess requestDataAccess, Gson gson) {
+
+    public GetRequestsHandler(Properties properties, RequestDataAccess requestDataAccess, UserDataAccess userDataAccess, Gson gson) {
         this.properties = properties;
         this.requestDataAccess = requestDataAccess;
+        this.userDataAccess = userDataAccess;
         this.gson = gson;
     }
 
@@ -37,25 +42,46 @@ public class GetRequestsHandler implements Handler {
             ctx.result(gson.toJson(error));
             return;
         }
+        User user = userDataAccess.getItem(login);
         String limitS = ctx.queryParam("limit");
         String offsetS = ctx.queryParam("offset");
         JsonElement ret;
-        if (limitS != null) {
-            int limit = Integer.parseInt(limitS);
-            if (offsetS != null) {
-                int offset = Integer.parseInt(offsetS);
-                ret = handleLimitAndOffset(login, limit, offset);
+        int status = 200;
+        if (user.getUserType().equals(UserType.EMPLOYEE)) {
+            if (limitS != null) {
+                int limit = Integer.parseInt(limitS);
+                int offset = 0;
+                if (offsetS != null) {
+                    offset = Integer.parseInt(offsetS);
+                }
+                try {
+                    ret = handleEmployeeLimitAndOffset(login, limit, offset);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
             } else {
-                ret = handleLimitAndOffset(login, limit, 0);
+                ret = handleCounts(login);
             }
         } else {
-            ret = handleCounts(login);
+            if (limitS == null) {
+                ret = new JsonObject();
+                ((JsonObject) ret).addProperty("error", "Must specify limit");
+                status = 400;
+            } else {
+                int limit = Integer.parseInt(limitS);
+                int offset = 0;
+                if (offsetS != null) {
+                    offset = Integer.parseInt(offsetS);
+                }
+                ret = handleManagerLimitAndOffset(limit, offset);
+            }
         }
-        ctx.status(200);
+        ctx.status(status);
         ctx.result(gson.toJson(ret));
     }
 
-    private JsonElement handleLimitAndOffset(int employee, int limit, int offset) {
+    private JsonElement handleEmployeeLimitAndOffset(int employee, int limit, int offset) {
         List<Request> requests = requestDataAccess.getEmployeeRequests(employee, offset, limit);
         return gson.toJsonTree(requests);
     }
@@ -63,6 +89,11 @@ public class GetRequestsHandler implements Handler {
     private JsonElement handleCounts(int employee) {
         RequestsCounts requestsCounts = requestDataAccess.getEmployeeRequestCounts(employee);
         return gson.toJsonTree(requestsCounts);
+    }
+
+    private JsonElement handleManagerLimitAndOffset(int limit, int offset) {
+        List<Request> requests = requestDataAccess.getRequests(offset, limit);
+        return gson.toJsonTree(requests);
     }
 
 }

@@ -16,8 +16,10 @@ import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
 import com.ryan.handlers.GetRequestsHandler;
 import com.ryan.handlers.PostRequestsHandler;
+import com.ryan.models.Request;
 import com.ryan.models.StoredImage;
 import com.ryan.models.User;
+import com.ryan.models.UserType;
 import io.javalin.Javalin;
 import io.javalin.http.JavalinServlet;
 
@@ -61,7 +63,7 @@ public class ApiServlet extends HttpServlet {
         ImageDataAccess imageDataAccess = new SqlImageAccess(connector);
         UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess);
         RequestDataAccess requestDataAccess = new SqlRequestAccess(connector, imageDataAccess);
-        Gson gson = new GsonBuilder().setPrettyPrinting()
+        Gson gson = new GsonBuilder().setDateFormat("EEE, dd MMM yyyy hh:mm:ss aa zzz ").setPrettyPrinting()
                 .registerTypeAdapter(StoredImage.class, new JsonSerializer<StoredImage>() {
                     @Override
                     public JsonElement serialize(StoredImage src, Type typeOfSrc, JsonSerializationContext context) {
@@ -69,7 +71,7 @@ public class ApiServlet extends HttpServlet {
                     }
                 }).create();
 
-        GetRequestsHandler getRequestsHandler = new GetRequestsHandler(properties, requestDataAccess, gson);
+        GetRequestsHandler getRequestsHandler = new GetRequestsHandler(properties, requestDataAccess, userDataAccess, gson);
         PostRequestsHandler postRequestsHandler = new PostRequestsHandler(properties, requestDataAccess, gson);
 
         javalinServlet = Javalin.createStandalone()
@@ -87,8 +89,36 @@ public class ApiServlet extends HttpServlet {
                         if (storedImage != null) {
                             userJson.addProperty("avatar", userObj.getAvatar().getImage64());
                         }
-                        returnObj.add("user", userJson);
+                        returnObj = userJson;
                         status = 200;
+                    }
+                    context.status(status);
+                    context.contentType("application/json");
+                    context.result(gson.toJson(returnObj));
+                })
+                .get("/api/user/{id}", context -> {
+                    int user = MainServlet.checkLogin(properties, context);
+                    int id = Integer.parseInt(context.pathParam("id"));
+                    JsonObject returnObj = new JsonObject();
+                    int status;
+                    if (user == -1) {
+                        returnObj.addProperty("error", "User is not logged in");
+                        status = 401;
+                    } else {
+                        User currentUser = userDataAccess.getItem(user);
+                        if (currentUser.getUserType() != UserType.MANAGER) {
+                            returnObj.addProperty("error", "User dpesn't have access to this");
+                            status = 403;
+                        } else {
+                            User userObj = userDataAccess.getItem(id);
+                            JsonObject userJson = gson.toJsonTree(userObj).getAsJsonObject();
+                            StoredImage storedImage = userObj.getAvatar();
+                            if (storedImage != null) {
+                                userJson.addProperty("avatar", userObj.getAvatar().getImage64());
+                            }
+                            returnObj = userJson;
+                            status = 200;
+                        }
                     }
                     context.status(status);
                     context.contentType("application/json");
@@ -96,6 +126,29 @@ public class ApiServlet extends HttpServlet {
                 })
                 .get("/api/requests", getRequestsHandler)
                 .post("/api/requests", postRequestsHandler)
+                .get("/api/requests/{id}", context -> {
+                    int login = MainServlet.checkLogin(properties, context);
+                    JsonObject returnObj = new JsonObject();
+                    int status;
+                    if (login == -1) {
+                        returnObj.addProperty("error", "User is not logged in");
+                        status = 401;
+                    } else {
+                        User user = userDataAccess.getItem(login);
+                        int id = Integer.parseInt(context.pathParam("id"));
+                        Request request = requestDataAccess.getItem(id);
+                        if (!user.getUserType().equals(UserType.MANAGER) && request.getEmployee() != login) {
+                            status = 403;
+                            returnObj.addProperty("error", "User doesn't have access to this request");
+                        } else {
+                            status = 200;
+                            returnObj = gson.toJsonTree(request).getAsJsonObject();
+                        }
+                    }
+                    context.status(status);
+                    context.contentType("application/json");
+                    context.result(gson.toJson(returnObj));
+                })
                 .javalinServlet();
     }
 }

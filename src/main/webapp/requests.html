@@ -3,11 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Employee</title>
     <link href="public/layout.css" rel="stylesheet" />
     <link href="public/styles.css" rel="stylesheet" />
     <script src="public/alerts.js"></script>
-    <script src="public/login.js"></script>
+    <script src="public/requests.js"></script>
     <script src="public/nav.js"></script>
 </head>
 
@@ -32,29 +32,37 @@
             </ul>
         </nav>
     </header>
-    <div id="alerts">
-
-    </div>
     <main>
-        <div class="center">
-            <form id="login" class="card">
-                <h2>Login</h2>
-                <label class="form-item">
-                    <span>Username</span>
-                    <input type="text" name="user" />
-                </label>
-                <label class="form-item">
-                    <span>Password</span>
-                    <input type="password" name="pass" />
-                </label>
-                <div id="login-buttons">
-                    <a href="#">Forgot Password?</a>
-                    <div>
-                        <button type="reset" class="btn btn-error">Cancel</button>
-                        <button type="submit" class="btn btn-submit">Submit</button>
-                    </div>
+        <div class="card">
+            <h2 style="padding-left: 1em;">Requests</h2>
+            <div class="form-buttons">
+                <div class="form-item">
+                    <label>Status</label>
+                    <select id="select-status" onchange="searchStatus(this)">
+                        <option value="all">All</option>
+                        <option value="open">Open</option>
+                        <option value="approved">Approved</option>
+                        <option value="denied">Denied</option>
+                    </select>
                 </div>
-            </form>
+                <div id="select-employee" class="form-item hidden">
+                    <label>Employee</label>
+                    <select onchange="searchEmployee(this)">
+                        <option value="all">All</option>
+
+                    </select>
+                </div>
+            </div>
+            <table id="requests" style="width: 100%;">
+                <tr id="requests-head">
+                    <th>Amount</th>
+                    <th>Parts</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Controls</th>
+                </tr>
+            </table>
+            <div id="loader" class="loader">Loading...</div>
         </div>
     </main>
     <footer>

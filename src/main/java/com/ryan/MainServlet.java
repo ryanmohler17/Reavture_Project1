@@ -13,10 +13,13 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import com.ryan.data.DataConnector;
 import com.ryan.data.ImageDataAccess;
+import com.ryan.data.RequestDataAccess;
 import com.ryan.data.SqlImageAccess;
+import com.ryan.data.SqlRequestAccess;
 import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
 import com.ryan.handlers.LoginHandler;
+import com.ryan.models.Request;
 import com.ryan.models.StoredImage;
 import com.ryan.models.User;
 import com.ryan.models.UserType;
@@ -71,6 +74,7 @@ public class MainServlet extends HttpServlet {
         connector = new DataConnector(properties);
         ImageDataAccess imageDataAccess = new SqlImageAccess(connector);
         UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess);
+        RequestDataAccess requestDataAccess = new SqlRequestAccess(connector, imageDataAccess);
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(StoredImage.class, new JsonSerializer<StoredImage>() {
                     @Override
@@ -120,6 +124,39 @@ public class MainServlet extends HttpServlet {
 
                     String request = String.join("\n", Files.readAllLines(Paths.get(path)));
                     context.html(request);
+                })
+                .get("/view", context -> {
+                    int login = checkLogin(properties, context);
+                    if (login == -1) {
+                        context.redirect("login");
+                        return;
+                    }
+
+                    User user = userDataAccess.getItem(login);
+                    int id = Integer.parseInt(context.queryParam("id"));
+                    Request request = requestDataAccess.getItem(id);
+                    if (!user.getUserType().equals(UserType.MANAGER) && request.getEmployee() != login) {
+                        context.status(403);
+                        context.result("You don't have access to this");
+                        return;
+                    }
+
+                    String path = getServletContext().getRealPath("view.html");
+
+                    String view = String.join("\n", Files.readAllLines(Paths.get(path)));
+                    context.html(view);
+                })
+                .get("/requests", context -> {
+                    int login = checkLogin(properties, context);
+                    if (login == -1) {
+                        context.redirect("login");
+                        return;
+                    }
+
+                    String path = getServletContext().getRealPath("requests.html");
+
+                    String requests = String.join("\n", Files.readAllLines(Paths.get(path)));
+                    context.html(requests);
                 })
                 .get("/login", context -> {
                     String path = getServletContext().getRealPath("login.html");

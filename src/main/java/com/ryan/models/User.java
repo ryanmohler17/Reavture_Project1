@@ -8,7 +8,7 @@ public class User {
 
     private int id = -1;
     private String userName;
-    private String encryptPassword;
+    private transient String encryptPassword;
     private String email;
     private String firstName;
     private String lastName;

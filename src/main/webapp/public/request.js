@@ -129,7 +129,7 @@ function handleSubmit() {
         images: images
     }
 
-    if(rateVal) {
+    if (rateVal) {
         part['rate'] = rateVal;
     }
 
@@ -165,13 +165,13 @@ function addPartToTable(part) {
         amountVal *= parseFloat(part.rate);
     }
 
-    document.querySelector("#expences > table").appendChild(tr);
+    document.querySelector("#expenses > table").appendChild(tr);
 
     let totalElm = document.querySelector("#total");
     totalElm.innerHTML = parseFloat(totalElm.innerHTML) + amountVal;
 
-    let expencesElm = document.querySelector("#expence-amount");
-    expencesElm.innerHTML = parseFloat(expencesElm.innerHTML) + 1;
+    let expensesElm = document.querySelector("#expense-amount");
+    expensesElm.innerHTML = parseFloat(expensesElm.innerHTML) + 1;
 }
 
 function toogleModal() {
@@ -224,7 +224,9 @@ function clearModal() {
     document.querySelector("#amount").innerHTML = "<input style=\"flex: 1;\" type=\"number\" value=\"\" />";
     document.querySelector("#desc").value = "";
     let rateDiv = document.querySelector("#rate");
-    rateDiv.remove();
+    if (rateDiv) {
+        rateDiv.remove();
+    }
     images = [];
     firstDrop = true;
     drop.classList.add("drop");
@@ -237,7 +239,7 @@ async function hanldeFinalSubmit() {
         return;
     }
     if (parts.length === 0) {
-        let alert = new Alert(AlertType.Failed, "Please add at least one expence");
+        let alert = new Alert(AlertType.Failed, "Please add at least one expense");
         alert.setHeader("Invalid form");
         pushAlert(alert);
         return;

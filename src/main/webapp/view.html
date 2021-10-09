@@ -3,12 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    <link href="public/layout.css" rel="stylesheet" />
-    <link href="public/styles.css" rel="stylesheet" />
-    <script src="public/alerts.js"></script>
-    <script src="public/login.js"></script>
-    <script src="public/nav.js"></script>
+    <title>Employee</title>
+    <link href="/ers/public/layout.css" rel="stylesheet" />
+    <link href="/ers/public/styles.css" rel="stylesheet" />
+    <script src="/ers/public/alerts.js"></script>
+    <script src="/ers/public/view.js"></script>
+    <script src="/ers/public/nav.js"></script>
 </head>
 
 <body>
@@ -32,31 +32,22 @@
             </ul>
         </nav>
     </header>
-    <div id="alerts">
-
-    </div>
     <main>
-        <div class="center">
-            <form id="login" class="card">
-                <h2>Login</h2>
-                <label class="form-item">
-                    <span>Username</span>
-                    <input type="text" name="user" />
-                </label>
-                <label class="form-item">
-                    <span>Password</span>
-                    <input type="password" name="pass" />
-                </label>
-                <div id="login-buttons">
-                    <a href="#">Forgot Password?</a>
-                    <div>
-                        <button type="reset" class="btn btn-error">Cancel</button>
-                        <button type="submit" class="btn btn-submit">Submit</button>
-                    </div>
-                </div>
-            </form>
+        <button id="back-button" class="btn btn-primary">Back</button>
+        <div id="manager-buttons" class="hidden card form-buttons">
+            <div class="form-item">
+                <label>Status</label>
+                <select id="status">
+                    <option value="open">Open</option>
+                    <option value="approve">Approve</option>
+                    <option value="deny">Deny</option>
+                </select>
+            </div>
+            <button class="btn btn-submit">Change</button>
         </div>
     </main>
+    <div id="alerts">
+    </div>
     <footer>
         <h3>Footer</h3>
     </footer>

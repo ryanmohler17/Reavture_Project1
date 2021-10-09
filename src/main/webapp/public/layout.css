@@ -131,14 +131,14 @@ footer {
     align-self: flex-end;
 }
 
-#expences > div {
+#expenses > div {
     display: flex; 
     flex: 1; 
     justify-content: space-between; 
     padding: 0 1em;
 }
 
-#expences > table {
+#expenses > table {
     width: 90%;
     margin: auto;
 }
@@ -161,9 +161,6 @@ form button {
     margin-top: 1em;
 }
 
-.form-item + .form-item {
-    margin-top: 1em;
-}
 
 .form-item > input {
     margin: .25em 0;
@@ -207,10 +204,6 @@ button + button {
     justify-content: center;
     align-items: center;
     margin: .25em;
-}
-
-.drop-img > .dummy {
-    /* margin-top: 100%; */
 }
 
 .drop-img > img {
@@ -279,7 +272,16 @@ button + button {
 }
 
 .form-buttons {
-    width: 100%; 
+    width: 100%;
     display: flex; 
     justify-content: flex-end;
+}
+
+td {
+    padding: 0 1em;
+}
+
+#requests th, #requests td {
+    word-wrap: break-word;
+    max-width: 20%;
 }

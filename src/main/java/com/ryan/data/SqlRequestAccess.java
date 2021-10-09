@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +36,9 @@ public class SqlRequestAccess implements RequestDataAccess {
             try (Connection connection = connector.newConnection()) {
                 PreparedStatement statement = connection.prepareStatement("INSERT INTO reimbursement_request (employee, submitted, status, last_update, resolved_by) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 statement.setInt(1, item.getEmployee());
-                statement.setDate(2, new Date(item.getSubmitted().getTime()));
+                statement.setTimestamp(2, new Timestamp(item.getSubmitted().getTime()));
                 statement.setInt(3, item.getStatus().ordinal());
-                statement.setDate(4, new Date(item.getLastUpdate().getTime()));
+                statement.setTimestamp(4, new Timestamp(item.getLastUpdate().getTime()));
                 if (item.getResolvedBy() > 0) {
                     statement.setInt(5, item.getResolvedBy());
                 } else {
@@ -122,6 +123,10 @@ public class SqlRequestAccess implements RequestDataAccess {
                 resultSet.next();
                 id = resultSet.getInt("id");
                 part.setId(id);
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO part_request_link (request_id, part_id) VALUES (?, ?)");
+                preparedStatement.setInt(1, reqId);
+                preparedStatement.setInt(2, id);
+                preparedStatement.execute();
                 for (StoredImage image : part.getImages()) {
                     saveImage(image, id);
                 }
@@ -166,7 +171,7 @@ public class SqlRequestAccess implements RequestDataAccess {
         imgStatement.setInt(1, id);
         ResultSet imgSet = imgStatement.executeQuery();
         while (imgSet.next()) {
-            UUID uuid = imgSet.getObject("image_id", UUID.class);
+            UUID uuid = UUID.fromString(imgSet.getString("image_id"));
             StoredImage storedImage = new StoredImage(uuid, imageDataAccess.loadBase64Img(uuid));
             requestPart.getImages().add(storedImage);
         }
@@ -250,9 +255,27 @@ public class SqlRequestAccess implements RequestDataAccess {
         }
     }
 
+    @Override
+    public List<Request> getRequests(int start, int limit) {
+        try (Connection connection = connector.newConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT id, employee, submitted, status, last_update, resolved_by FROM reimbursement_request LIMIT ? OFFSET ?");
+            statement.setInt(1, limit);
+            statement.setInt(2, start);
+            ResultSet resultSet = statement.executeQuery();
+            List<Request> requests = new ArrayList<>();
+            while (resultSet.next()) {
+                requests.add(requestFromResultSet(resultSet));
+            }
+            return requests;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private Request requestFromResultSet(ResultSet resultSet) throws SQLException {
-        Request request = new Request(resultSet.getInt("employee"), resultSet.getDate("submitted"),
-                RequestStatus.values()[resultSet.getInt("status")], resultSet.getDate("last_update"));
+        Request request = new Request(resultSet.getInt("employee"), resultSet.getTimestamp("submitted"),
+                RequestStatus.values()[resultSet.getInt("status")], resultSet.getTimestamp("last_update"));
 
         int resolved = resultSet.getInt("resolved_by");
         if (!resultSet.wasNull()) {

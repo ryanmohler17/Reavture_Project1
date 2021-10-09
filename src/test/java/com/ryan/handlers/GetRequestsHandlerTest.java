@@ -13,9 +13,12 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.ryan.data.RequestDataAccess;
+import com.ryan.data.UserDataAccess;
 import com.ryan.models.Request;
 import com.ryan.models.RequestStatus;
 import com.ryan.models.RequestsCounts;
+import com.ryan.models.User;
+import com.ryan.models.UserType;
 import io.javalin.http.Context;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -39,6 +42,7 @@ public class GetRequestsHandlerTest {
     private Gson gson;
     private int userId;
     private Context context;
+    private UserDataAccess userDataAccess;
 
     public void setupMocks() throws JOSEException {
         byte[] secret = new byte[64];
@@ -62,6 +66,15 @@ public class GetRequestsHandlerTest {
 
         properties = new Properties();
         properties.setProperty("user.secret", Base64.getEncoder().encodeToString(secret));
+
+        userDataAccess = Mockito.mock(UserDataAccess.class);
+        Mockito.when(userDataAccess.getItem(Mockito.anyInt())).then(invocation -> {
+            assertEquals(userId, (int) invocation.getArgument(0));
+            User user = new User();
+            user.setId(userId);
+            user.setUserType(UserType.EMPLOYEE);
+            return user;
+        });
 
         gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -103,7 +116,7 @@ public class GetRequestsHandlerTest {
             return context;
         });
 
-        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, requestDataAccess, gson);
+        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, requestDataAccess, userDataAccess, gson);
         requestsHandler.handle(context);
     }
 
@@ -153,7 +166,7 @@ public class GetRequestsHandlerTest {
             return context;
         });
 
-        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, requestDataAccess, gson);
+        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, requestDataAccess, userDataAccess, gson);
         requestsHandler.handle(context);
         assertTrue(limitCalled.get() && offsetCalled.get());
     }
@@ -213,7 +226,7 @@ public class GetRequestsHandlerTest {
             return context;
         });
 
-        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, requestDataAccess, gson);
+        GetRequestsHandler requestsHandler = new GetRequestsHandler(properties, requestDataAccess, userDataAccess, gson);
         requestsHandler.handle(context);
         assertTrue(removedCookie.get());
     }

@@ -23,4 +23,6 @@ public interface RequestDataAccess extends DataAccess<Integer, Request> {
 
     List<Request> getEmployeeRequests(int employeeId, int start, int limit);
 
+    List<Request> getRequests(int start, int limit);
+
 }

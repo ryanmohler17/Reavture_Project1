@@ -18,15 +18,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     nav.innerHTML = "";
     let profile = document.createElement("li");
     profile.id = "nav-profile"
-    if (data.user.avatar) {
+    if (data.avatar) {
         let img = document.createElement("img");
-        img.src = "data:image/png;base64," + data.user.avatar;
+        img.src = "data:image/png;base64," + data.avatar;
         profile.appendChild(img);
     }
 
     let link = document.createElement("a");
     link.href = "/ers/profile";
-    link.text = data.user.firstName;
+    link.text = data.firstName;
 
     profile.appendChild(link);
 

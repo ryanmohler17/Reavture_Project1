@@ -89,7 +89,7 @@ public class SqlUserAccess implements UserDataAccess {
             imgStatement.setInt(1, item);
             ResultSet imgSet = imgStatement.executeQuery();
             if (imgSet.next()) {
-                UUID uuid = imgSet.getObject("image_id", UUID.class);
+                UUID uuid = UUID.fromString(imgSet.getString("image_id"));
                 user.setAvatar(new StoredImage(uuid, imageDataAccess.loadBase64Img(uuid)));
             }
             return user;
