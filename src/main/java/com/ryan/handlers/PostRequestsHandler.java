@@ -35,8 +35,6 @@ public class PostRequestsHandler implements Handler {
         this.gson = gson;
     }
 
-    private double rate = .65;
-
     @Override
     public void handle(@NotNull Context ctx) throws Exception {
         int login = MainServlet.checkLogin(properties, ctx);
