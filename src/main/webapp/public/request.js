@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
     drop = document.querySelector("#image-drop");
     drop.addEventListener("drop", function (e) {
         e.preventDefault();
-        //console.log("drop");
         if (e.dataTransfer.items) {
             for (let i = 0; i < e.dataTransfer.items.length; i++) {
                 let item = e.dataTransfer.items[i];
@@ -76,17 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector("#add-part").addEventListener('click', function (e) {
         e.stopPropagation();
-        toogleModal();
-    });
-
-    document.querySelector(".modal").addEventListener('click', function (e) {
-        e.stopPropagation();
-    });
-
-    document.body.addEventListener('click', function () {
-        if (modal) {
-            toogleModal();
-        }
+        toogleModal('add-modal');
     });
 
     let fileInput = document.querySelector("#file-input");
@@ -172,12 +161,6 @@ function addPartToTable(part) {
 
     let expensesElm = document.querySelector("#expense-amount");
     expensesElm.innerHTML = parseFloat(expensesElm.innerHTML) + 1;
-}
-
-function toogleModal() {
-    document.querySelector('#modal-wrapper').classList.toggle('hidden');
-    document.body.classList.toggle('body-overflow');
-    modal = !modal;
 }
 
 function handleFile(file) {

@@ -151,7 +151,7 @@ function search() {
             }
         }
         if (status != "all") {
-            let statusElm = document.querySelector(".status");
+            let statusElm = row.querySelector(".status");
             if (statusElm.innerHTML.toLocaleLowerCase() != status) {
                 row.classList.add("hidden");
             }

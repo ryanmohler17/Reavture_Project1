@@ -6,6 +6,7 @@
     <title>Employee</title>
     <link href="/ers/public/layout.css" rel="stylesheet" />
     <link href="/ers/public/styles.css" rel="stylesheet" />
+    <script src="/ers/public/modal.js"></script>
     <script src="/ers/public/alerts.js"></script>
     <script src="/ers/public/view.js"></script>
     <script src="/ers/public/nav.js"></script>
@@ -34,18 +35,44 @@
     </header>
     <main>
         <button id="back-button" class="btn btn-primary">Back</button>
-        <div id="manager-buttons" class="hidden card form-buttons">
-            <div class="form-item">
-                <label>Status</label>
-                <select id="status">
-                    <option value="open">Open</option>
-                    <option value="approve">Approve</option>
-                    <option value="deny">Deny</option>
-                </select>
+        <div class="row">
+            <div class="card"><h1>Expense</h1></div>
+            <div id="manager-buttons" class="hidden card form-buttons">
+                <label class="form-item">
+                    <span>Status</span>
+                    <select id="status">
+                        <option value="OPEN">Open</option>
+                        <option value="APPROVED">Approve</option>
+                        <option value="DENIED">Deny</option>
+                    </select>
+                </label>
+                <button class="btn btn-submit" onclick="change()">Change</button>
             </div>
-            <button class="btn btn-submit">Change</button>
+            <div id="status-head" class="card">
+                <h3>Status</h3>
+                <span></span>
+            </div>
+        </div>
+        <div class="row" id="totals">
+
+        </div>
+        <div id="parts">
+
         </div>
     </main>
+    <div id="modal-wrapper" class="modal-wrapper hidden">
+        <div class="overlay"></div>
+        <div class="modal-wrapper scroll">
+            <div class="modal-content">
+                <div class="modal-content-wrapper" id="modals">
+                    <div class="modal hidden" id="">
+                        <div class="content">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="alerts">
     </div>
     <footer>

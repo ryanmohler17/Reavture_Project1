@@ -16,6 +16,7 @@ import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
 import com.ryan.handlers.GetRequestsHandler;
 import com.ryan.handlers.PostRequestsHandler;
+import com.ryan.handlers.PostStatusHandler;
 import com.ryan.models.Request;
 import com.ryan.models.StoredImage;
 import com.ryan.models.User;
@@ -73,6 +74,7 @@ public class ApiServlet extends HttpServlet {
 
         GetRequestsHandler getRequestsHandler = new GetRequestsHandler(properties, requestDataAccess, userDataAccess, gson);
         PostRequestsHandler postRequestsHandler = new PostRequestsHandler(properties, requestDataAccess, gson);
+        PostStatusHandler postStatusHandler = new PostStatusHandler(properties, requestDataAccess, userDataAccess, gson);
 
         javalinServlet = Javalin.createStandalone()
                 .get("/api/user", context -> {
@@ -105,20 +107,14 @@ public class ApiServlet extends HttpServlet {
                         returnObj.addProperty("error", "User is not logged in");
                         status = 401;
                     } else {
-                        User currentUser = userDataAccess.getItem(user);
-                        if (currentUser.getUserType() != UserType.MANAGER) {
-                            returnObj.addProperty("error", "User dpesn't have access to this");
-                            status = 403;
-                        } else {
-                            User userObj = userDataAccess.getItem(id);
-                            JsonObject userJson = gson.toJsonTree(userObj).getAsJsonObject();
-                            StoredImage storedImage = userObj.getAvatar();
-                            if (storedImage != null) {
-                                userJson.addProperty("avatar", userObj.getAvatar().getImage64());
-                            }
-                            returnObj = userJson;
-                            status = 200;
+                        User userObj = userDataAccess.getItem(id);
+                        JsonObject userJson = gson.toJsonTree(userObj).getAsJsonObject();
+                        StoredImage storedImage = userObj.getAvatar();
+                        if (storedImage != null) {
+                            userJson.addProperty("avatar", userObj.getAvatar().getImage64());
                         }
+                        returnObj = userJson;
+                        status = 200;
                     }
                     context.status(status);
                     context.contentType("application/json");
@@ -149,6 +145,7 @@ public class ApiServlet extends HttpServlet {
                     context.contentType("application/json");
                     context.result(gson.toJson(returnObj));
                 })
+                .post("/api/requests/status", postStatusHandler)
                 .javalinServlet();
     }
 }

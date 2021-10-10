@@ -128,7 +128,7 @@ public class MainServlet extends HttpServlet {
                 .get("/view", context -> {
                     int login = checkLogin(properties, context);
                     if (login == -1) {
-                        context.redirect("login");
+                        context.redirect("/ers/login");
                         return;
                     }
 
