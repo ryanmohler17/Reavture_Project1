@@ -23,6 +23,8 @@ import com.ryan.models.User;
 import com.ryan.models.UserType;
 import io.javalin.Javalin;
 import io.javalin.http.JavalinServlet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -60,10 +62,11 @@ public class ApiServlet extends HttpServlet {
             e.printStackTrace();
             return;
         }
+        Logger logger = LogManager.getLogger(ApiServlet.class);
         connector = new DataConnector(properties);
-        ImageDataAccess imageDataAccess = new SqlImageAccess(connector);
-        UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess);
-        RequestDataAccess requestDataAccess = new SqlRequestAccess(connector, imageDataAccess);
+        ImageDataAccess imageDataAccess = new SqlImageAccess(connector, logger);
+        UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess, logger);
+        RequestDataAccess requestDataAccess = new SqlRequestAccess(connector, imageDataAccess, logger);
         Gson gson = new GsonBuilder().setDateFormat("EEE, dd MMM yyyy hh:mm:ss aa zzz ").setPrettyPrinting()
                 .registerTypeAdapter(StoredImage.class, new JsonSerializer<StoredImage>() {
                     @Override
@@ -77,6 +80,10 @@ public class ApiServlet extends HttpServlet {
         PostStatusHandler postStatusHandler = new PostStatusHandler(properties, requestDataAccess, userDataAccess, gson);
 
         javalinServlet = Javalin.createStandalone()
+                .before(ctx -> {
+                    int user = MainServlet.checkLogin(properties, ctx);
+                    logger.info("User with id " + user + " requested api endpoint " + ctx.path());
+                })
                 .get("/api/user", context -> {
                     int user = MainServlet.checkLogin(properties, context);
                     JsonObject returnObj = new JsonObject();

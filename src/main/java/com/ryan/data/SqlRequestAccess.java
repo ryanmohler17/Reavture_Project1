@@ -6,6 +6,7 @@ import com.ryan.models.RequestStatus;
 import com.ryan.models.RequestType;
 import com.ryan.models.RequestsCounts;
 import com.ryan.models.StoredImage;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.image.BufferedImage;
 import java.sql.Connection;
@@ -24,9 +25,11 @@ public class SqlRequestAccess implements RequestDataAccess {
 
     private DataConnector connector;
     private ImageDataAccess imageDataAccess;
-    public SqlRequestAccess(DataConnector connector, ImageDataAccess imageDataAccess) {
+    private Logger logger;
+    public SqlRequestAccess(DataConnector connector, ImageDataAccess imageDataAccess, Logger logger) {
         this.connector = connector;
         this.imageDataAccess = imageDataAccess;
+        this.logger = logger;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class SqlRequestAccess implements RequestDataAccess {
                 id = resultSet.getInt("id");
                 item.setId(id);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.warn("Failed to save request", e);
                 return null;
             }
         } else {
@@ -68,7 +71,7 @@ public class SqlRequestAccess implements RequestDataAccess {
                 statement.setInt(6, id);
                 statement.execute();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.warn("Failed to update request", e);
                 return null;
             }
         }
@@ -87,7 +90,7 @@ public class SqlRequestAccess implements RequestDataAccess {
             resultSet.next();
             return requestFromResultSet(resultSet);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get request", e);
             return null;
         }
     }
@@ -103,7 +106,7 @@ public class SqlRequestAccess implements RequestDataAccess {
             }
             return requests;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get all requests", e);
             return null;
         }
     }
@@ -131,7 +134,7 @@ public class SqlRequestAccess implements RequestDataAccess {
                     saveImage(image, id);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.warn("Failed to save requests part", e);
                 return null;
             }
         } else {
@@ -144,7 +147,7 @@ public class SqlRequestAccess implements RequestDataAccess {
                 statement.setInt(5, id);
                 statement.execute();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.warn("Failed to update request", e);
                 return null;
             }
         }
@@ -152,30 +155,33 @@ public class SqlRequestAccess implements RequestDataAccess {
     }
 
     @Override
-    public RequestPart loadPart(int id) throws SQLException {
-        Connection connection = connector.newConnection();
-        PreparedStatement statement = connection.prepareStatement("SELECT id, amount, description, type, rate FROM reimbursement_part WHERE id = ?");
-        statement.setInt(1, id);
-        ResultSet resultSet = statement.executeQuery();
-        resultSet.next();
-        RequestPart requestPart = new RequestPart(resultSet.getDouble("amount"), resultSet.getString("description"),
-                RequestType.values()[resultSet.getInt("type")]);
+    public RequestPart loadPart(int id) {
+        try (Connection connection = connector.newConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT id, amount, description, type, rate FROM reimbursement_part WHERE id = ?");
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            RequestPart requestPart = new RequestPart(resultSet.getDouble("amount"), resultSet.getString("description"),
+                    RequestType.values()[resultSet.getInt("type")]);
 
-        requestPart.setId(id);
-        double rate = resultSet.getDouble("rate");
-        if (!resultSet.wasNull()) {
-            requestPart.setRate(rate);
-        }
+            requestPart.setId(id);
+            double rate = resultSet.getDouble("rate");
+            if (!resultSet.wasNull()) {
+                requestPart.setRate(rate);
+            }
 
-        PreparedStatement imgStatement = connection.prepareStatement("SELECT image_id FROM part_img WHERE part_id = ?");
-        imgStatement.setInt(1, id);
-        ResultSet imgSet = imgStatement.executeQuery();
-        while (imgSet.next()) {
-            UUID uuid = UUID.fromString(imgSet.getString("image_id"));
-            StoredImage storedImage = new StoredImage(uuid, imageDataAccess.loadBase64Img(uuid));
-            requestPart.getImages().add(storedImage);
+            PreparedStatement imgStatement = connection.prepareStatement("SELECT image_id FROM part_img WHERE part_id = ?");
+            imgStatement.setInt(1, id);
+            ResultSet imgSet = imgStatement.executeQuery();
+            while (imgSet.next()) {
+                UUID uuid = UUID.fromString(imgSet.getString("image_id"));
+                StoredImage storedImage = new StoredImage(uuid, imageDataAccess.loadBase64Img(uuid));
+                requestPart.getImages().add(storedImage);
+            }
+            return requestPart;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return requestPart;
     }
 
     @Override
@@ -193,6 +199,7 @@ public class SqlRequestAccess implements RequestDataAccess {
             statement.setObject(2, uuid);
             statement.execute();
         } catch (SQLException e) {
+            logger.warn("Failed to save image", e);
             e.printStackTrace();
         }
     }
@@ -214,7 +221,7 @@ public class SqlRequestAccess implements RequestDataAccess {
             return new RequestsCounts(resultSet.getInt("allreq"), resultSet.getInt("open"),
                     resultSet.getInt("approved"), resultSet.getInt("denied"));
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get employee request counts", e);
             return null;
         }
     }
@@ -231,7 +238,7 @@ public class SqlRequestAccess implements RequestDataAccess {
             }
             return requests;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get employee requests", e);
             return null;
         }
     }
@@ -250,7 +257,7 @@ public class SqlRequestAccess implements RequestDataAccess {
             }
             return requests;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get employee requests", e);
             return null;
         }
     }
@@ -268,7 +275,7 @@ public class SqlRequestAccess implements RequestDataAccess {
             }
             return requests;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get requests", e);
             return null;
         }
     }

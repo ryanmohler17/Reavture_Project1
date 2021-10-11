@@ -1,5 +1,7 @@
 package com.ryan.data;
 
+import org.apache.logging.log4j.Logger;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -15,8 +17,10 @@ import java.util.UUID;
 public class SqlImageAccess implements ImageDataAccess {
 
     private DataConnector connector;
-    public SqlImageAccess(DataConnector connector) {
+    private Logger logger;
+    public SqlImageAccess(DataConnector connector, Logger logger) {
         this.connector = connector;
+        this.logger = logger;
     }
 
     @Override
@@ -28,7 +32,7 @@ public class SqlImageAccess implements ImageDataAccess {
             resultSet.next();
             return resultSet.getString("image");
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to load base64 image", e);
             return null;
         }
     }
@@ -43,7 +47,7 @@ public class SqlImageAccess implements ImageDataAccess {
         try {
             return ImageIO.read(byteArrayInputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("Failed to load buffered image", e);
             return null;
         }
     }
@@ -62,11 +66,11 @@ public class SqlImageAccess implements ImageDataAccess {
                 statement.execute();
                 return uuid;
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.warn("Failed to save image to database", e);
                 return null;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("Failed to convert image to base64 for saving in database", e);
             return null;
         }
     }

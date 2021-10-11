@@ -3,6 +3,7 @@ package com.ryan.data;
 import com.ryan.models.StoredImage;
 import com.ryan.models.User;
 import com.ryan.models.UserType;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,9 +18,11 @@ public class SqlUserAccess implements UserDataAccess {
 
     private DataConnector connector;
     private ImageDataAccess imageDataAccess;
-    public SqlUserAccess(DataConnector connector, ImageDataAccess imageDataAccess) {
+    private Logger logger;
+    public SqlUserAccess(DataConnector connector, ImageDataAccess imageDataAccess, Logger logger) {
         this.connector = connector;
         this.imageDataAccess = imageDataAccess;
+        this.logger = logger;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class SqlUserAccess implements UserDataAccess {
                 }
                 return id;
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.warn("Failed to save user", e);
             }
         } else {
             try (Connection c = connector.newConnection()) {
@@ -70,7 +73,7 @@ public class SqlUserAccess implements UserDataAccess {
                     item.getAvatar().setId(uuid);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.warn("Failed to update user", e);
             }
             return item.getId();
         }
@@ -94,7 +97,7 @@ public class SqlUserAccess implements UserDataAccess {
             }
             return user;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get user", e);
             return null;
         }
     }
@@ -110,7 +113,7 @@ public class SqlUserAccess implements UserDataAccess {
             }
             return users;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get all users", e);
             return null;
         }
     }
@@ -127,7 +130,7 @@ public class SqlUserAccess implements UserDataAccess {
                 return null;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Failed to get user by name", e);
             return null;
         }
     }

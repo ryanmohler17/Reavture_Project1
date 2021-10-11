@@ -26,6 +26,8 @@ import com.ryan.models.UserType;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.JavalinServlet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -71,10 +73,11 @@ public class MainServlet extends HttpServlet {
             e.printStackTrace();
             return;
         }
+        Logger logger = LogManager.getLogger(MainServlet.class);
         connector = new DataConnector(properties);
-        ImageDataAccess imageDataAccess = new SqlImageAccess(connector);
-        UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess);
-        RequestDataAccess requestDataAccess = new SqlRequestAccess(connector, imageDataAccess);
+        ImageDataAccess imageDataAccess = new SqlImageAccess(connector, logger);
+        UserDataAccess userDataAccess = new SqlUserAccess(connector, imageDataAccess, logger);
+        RequestDataAccess requestDataAccess = new SqlRequestAccess(connector, imageDataAccess, logger);
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(StoredImage.class, new JsonSerializer<StoredImage>() {
                     @Override
@@ -86,6 +89,10 @@ public class MainServlet extends HttpServlet {
         LoginHandler loginHandler = new LoginHandler(userDataAccess, gson, Base64.getDecoder().decode(properties.getProperty("user.secret")));
 
         javalinServlet = Javalin.createStandalone()
+                .before(ctx -> {
+                    int user = MainServlet.checkLogin(properties, ctx);
+                    logger.info("User with id " + user + " requested normal endpoint " + ctx.path());
+                })
                 .get("/", context -> {
                     int login = checkLogin(properties, context);
                     if (login == -1) {
