@@ -15,6 +15,7 @@ import com.ryan.data.SqlRequestAccess;
 import com.ryan.data.SqlUserAccess;
 import com.ryan.data.UserDataAccess;
 import com.ryan.handlers.GetRequestsHandler;
+import com.ryan.handlers.PatchUserHandler;
 import com.ryan.handlers.PostRequestsHandler;
 import com.ryan.handlers.PostStatusHandler;
 import com.ryan.models.Request;
@@ -78,6 +79,7 @@ public class ApiServlet extends HttpServlet {
         GetRequestsHandler getRequestsHandler = new GetRequestsHandler(properties, requestDataAccess, userDataAccess, gson);
         PostRequestsHandler postRequestsHandler = new PostRequestsHandler(properties, requestDataAccess, gson);
         PostStatusHandler postStatusHandler = new PostStatusHandler(properties, requestDataAccess, userDataAccess, gson);
+        PatchUserHandler patchUserHandler = new PatchUserHandler(properties, userDataAccess, gson);
 
         javalinServlet = Javalin.createStandalone()
                 .before(ctx -> {
@@ -109,9 +111,7 @@ public class ApiServlet extends HttpServlet {
                     context.contentType("application/json");
                     context.result(gson.toJson(returnObj));
                 })
-                .patch("/api/user", context -> {
-
-                })
+                .patch("/api/user", patchUserHandler)
                 .get("/api/user/{id}", context -> {
                     int user = MainServlet.checkLogin(properties, context);
                     int id = Integer.parseInt(context.pathParam("id"));

@@ -67,8 +67,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let amountElm = createCard("Amount", "$" + total);
     infoElm.appendChild(amountElm);
-
-    console.log(data);
 });
 
 function createPartElm(part, i) {

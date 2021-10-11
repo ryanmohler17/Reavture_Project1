@@ -118,7 +118,6 @@ async function fetchRequests(amount) {
 
         if (status != "all") {
             if (item.status.toLocaleLowerCase() != status) {
-                console.log(item.status + " " + status)
                 tr.classList.add("hidden");
             }
         }

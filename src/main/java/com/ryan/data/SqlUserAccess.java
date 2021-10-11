@@ -59,6 +59,7 @@ public class SqlUserAccess implements UserDataAccess {
                 statement.setString(5, item.getEncryptPassword());
                 statement.setInt(6, item.getUserType().ordinal());
                 statement.setInt(7, item.getId());
+                statement.execute();
                 if (item.getAvatar() != null && item.getAvatar().getBufferedImage() != null) {
                     PreparedStatement iconStatement;
                     UUID uuid = imageDataAccess.saveImg(item.getAvatar().getBufferedImage());

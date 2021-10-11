@@ -195,7 +195,6 @@ function handleFile(file) {
         div.appendChild(dummy);
         div.appendChild(img);
         drop.appendChild(div);
-        //console.log(reader.result); // reader.result is a base64 string
     });
 }
 
@@ -230,8 +229,6 @@ async function hanldeFinalSubmit() {
         return;
     }
 
-    console.log(parts);
-
     let res = await fetch("/ers/api/requests", {
         method: 'POST',
         headers: {
@@ -239,8 +236,6 @@ async function hanldeFinalSubmit() {
         },
         body: JSON.stringify(parts)
     });
-
-    console.log(res.status);
 
     if (res.status === 200) {
         currentSubmit = true;

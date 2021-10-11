@@ -18,7 +18,6 @@ async function handleProfile() {
     }
 
     let info = document.querySelector("#employee-info");
-    console.log(data);
     info.querySelector("h3").innerHTML = "Hi " + data.user.firstName;
 
 }
@@ -32,9 +31,7 @@ async function handleReimbersement() {
     }
 
     let reimbursement = document.querySelector("#reimbursement")
-    console.log(reimbursement);
     let li = reimbursement.querySelectorAll("ul > li > a")[1];
-    console.log(li);
     li.innerHTML = "View requests (" + data.open + ")";
 
     let pOpen = document.createElement("p");
