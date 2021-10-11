@@ -170,7 +170,9 @@ function handleFile(file) {
         return;
     }
     if (types[0] !== "image") {
-        // TODO maybe show message that file could be uploaded
+        let alert = new Alert(AlertType.Failed, "File with name " + file.name + " was not an image!");
+        alert.setHeader("Failed to upload file");
+        pushAlert(alert);
         return;
     }
     const reader = new FileReader();

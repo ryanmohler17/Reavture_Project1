@@ -6,9 +6,8 @@
     <title>Employee</title>
     <link href="/ers/public/layout.css" rel="stylesheet" />
     <link href="/ers/public/styles.css" rel="stylesheet" />
-    <script src="/ers/public/modal.js"></script>
     <script src="/ers/public/alerts.js"></script>
-    <script src="/ers/public/view.js"></script>
+    <script src="/ers/public/profile.js"></script>
     <script src="/ers/public/nav.js"></script>
 </head>
 
@@ -34,41 +33,43 @@
         </nav>
     </header>
     <main>
-        <button id="back-button" class="btn btn-primary">Back</button>
-        <div class="row">
-            <div class="card"><h1>Expense</h1></div>
-            <div id="manager-buttons" class="hidden card form-buttons">
+        <div class="card">
+            <h2>Profile</h2>
+            <div class="row">
                 <label class="form-item">
-                    <span>Status</span>
-                    <select id="status">
-                        <option value="OPEN">Open</option>
-                        <option value="APPROVED">Approve</option>
-                        <option value="DENIED">Deny</option>
-                    </select>
+                    <span>First Name</span>
+                    <input id="fName" type="text" />
                 </label>
-                <button class="btn btn-submit" onclick="change()">Change</button>
-            </div>
-            <div id="status-head" class="card">
-                <h3>Status</h3>
-                <span></span>
-            </div>
-        </div>
-        <div class="row" id="totals">
-
-        </div>
-        <div id="parts">
-
-        </div>
-    </main>
-    <div id="modal-wrapper" class="modal-wrapper hidden">
-        <div class="overlay"></div>
-        <div class="modal-wrapper scroll">
-            <div class="modal-content">
-                <div class="modal-content-wrapper" id="modals">
+                <label class="form-item">
+                    <span>Last Name</span>
+                    <input id="lName" type="text" />
+                </label>
+                <div>
+                    <button id="img-button" class="btn btn-primary">Add icon</button>
+                    <img id="profile-icon" class="hidden" style="width: 50px; height: 50;" />
+                    <input class="hidden" id="upload-input" type="file" />
                 </div>
             </div>
         </div>
-    </div>
+        <div class="card">
+            <h2>Password</h2>
+            <label class="form-item">
+                <span>Current Password</span>
+                <input id="current-password" type="password" />
+            </label>
+            <label class="form-item">
+                <span>New password</span>
+                <input id="new-password" type="password" />
+            </label>
+            <label class="form-item">
+                <span>Repeat new password</span>
+                <input id="repeat-password" type="password" />
+            </label>
+        </div>
+        <div class="form-buttons">
+            <button id="submit-button" class="btn btn-submit">Change Profile</button>
+        </div>
+    </main>
     <div id="alerts">
     </div>
     <footer>

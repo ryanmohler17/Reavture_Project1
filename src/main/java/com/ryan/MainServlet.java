@@ -91,7 +91,11 @@ public class MainServlet extends HttpServlet {
         javalinServlet = Javalin.createStandalone()
                 .before(ctx -> {
                     int user = MainServlet.checkLogin(properties, ctx);
-                    logger.info("User with id " + user + " requested normal endpoint " + ctx.path());
+                    if (user != -1) {
+                        logger.info("User with id " + user + " requested normal endpoint " + ctx.path());
+                    } else {
+                        logger.info("Guest user requested normal endpoint " + ctx.path());
+                    }
                 })
                 .get("/", context -> {
                     int login = checkLogin(properties, context);
@@ -182,6 +186,18 @@ public class MainServlet extends HttpServlet {
                     context.result(file);
                     String[] split = path.split("\\.");
                     context.contentType("text/" + split[split.length - 1]);
+                })
+                .get("/profile", context -> {
+                    int login = checkLogin(properties, context);
+                    if (login == -1) {
+                        context.redirect("login");
+                        return;
+                    }
+
+                    String path = getServletContext().getRealPath("profile.html");
+
+                    String profile = String.join("\n", Files.readAllLines(Paths.get(path)));
+                    context.html(profile);
                 })
                 .javalinServlet();
         super.init(config);

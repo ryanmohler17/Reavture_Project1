@@ -82,7 +82,11 @@ public class ApiServlet extends HttpServlet {
         javalinServlet = Javalin.createStandalone()
                 .before(ctx -> {
                     int user = MainServlet.checkLogin(properties, ctx);
-                    logger.info("User with id " + user + " requested api endpoint " + ctx.path());
+                    if (user != -1) {
+                        logger.info("User with id " + user + " requested api endpoint " + ctx.path());
+                    } else {
+                        logger.info("Guest user requested api endpoint " + ctx.path());
+                    }
                 })
                 .get("/api/user", context -> {
                     int user = MainServlet.checkLogin(properties, context);
@@ -104,6 +108,9 @@ public class ApiServlet extends HttpServlet {
                     context.status(status);
                     context.contentType("application/json");
                     context.result(gson.toJson(returnObj));
+                })
+                .patch("/api/user", context -> {
+
                 })
                 .get("/api/user/{id}", context -> {
                     int user = MainServlet.checkLogin(properties, context);
