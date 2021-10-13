@@ -207,8 +207,10 @@ function clearModal() {
     document.querySelector("#amount").innerHTML = "<input style=\"flex: 1;\" type=\"number\" value=\"\" />";
     document.querySelector("#desc").value = "";
     let rateDiv = document.querySelector("#rate");
-    if (rateDiv) {
-        rateDiv.remove();
+    rateDiv.classList.add('hidden');
+    let label = rateDiv.querySelector("label")
+    if (label) {
+        label.remove();
     }
     images = [];
     firstDrop = true;
