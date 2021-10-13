@@ -54,7 +54,8 @@ public class PostStatusHandler implements Handler {
         int reqId = json.get("req").getAsInt();
         Request request = requestDataAccess.getItem(reqId);
         if (request == null) {
-            ctx.status(400);JsonObject error = new JsonObject();
+            ctx.status(400);
+            JsonObject error = new JsonObject();
             error.addProperty("error", "Invalid request");
             ctx.result(gson.toJson(error));
             return;

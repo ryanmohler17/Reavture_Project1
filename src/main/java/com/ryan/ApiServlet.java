@@ -36,7 +36,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class ApiServlet extends HttpServlet {
 
@@ -106,6 +108,28 @@ public class ApiServlet extends HttpServlet {
                         }
                         returnObj = userJson;
                         status = 200;
+                    }
+                    context.status(status);
+                    context.contentType("application/json");
+                    context.result(gson.toJson(returnObj));
+                })
+                .get("/api/users", context -> {
+                    int user = MainServlet.checkLogin(properties, context);
+                    JsonElement returnObj = new JsonObject();
+                    int status;
+                    if (user == -1) {
+                        returnObj.getAsJsonObject().addProperty("error", "User is not logged in");
+                        status = 401;
+                    } else {
+                        User userObj = userDataAccess.getItem(user);
+                        if (!userObj.getUserType().equals(UserType.MANAGER)) {
+                            returnObj.getAsJsonObject().addProperty("error", "User is not a manager");
+                            status = 403;
+                        } else {
+                            List<User> users = userDataAccess.getAllItems().stream().filter(user1 -> user1.getUserType().equals(UserType.EMPLOYEE)).collect(Collectors.toList());
+                            returnObj = gson.toJsonTree(users);
+                            status = 200;
+                        }
                     }
                     context.status(status);
                     context.contentType("application/json");
