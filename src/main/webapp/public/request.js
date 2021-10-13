@@ -1,7 +1,6 @@
 let firstDrop = true;
 let drop;
 let images = [];
-let modal = false;
 let dropContent;
 let parts = [];
 
@@ -75,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector("#add-part").addEventListener('click', function (e) {
         e.stopPropagation();
-        toogleModal('add-modal');
+        toggleModal('add-modal');
     });
 
     let fileInput = document.querySelector("#file-input");
@@ -126,7 +125,7 @@ function handleSubmit() {
     let alert = new Alert(AlertType.Success, "Succesfully added expense")
     pushAlert(alert);
     clearModal();
-    toogleModal();
+    toggleModal('add-modal');
     addPartToTable(part);
 }
 
