@@ -2,6 +2,7 @@ package com.ryan;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -18,6 +19,7 @@ import com.ryan.handlers.GetRequestsHandler;
 import com.ryan.handlers.PatchUserHandler;
 import com.ryan.handlers.PostRequestsHandler;
 import com.ryan.handlers.PostStatusHandler;
+import com.ryan.handlers.PostUserHandler;
 import com.ryan.models.Request;
 import com.ryan.models.StoredImage;
 import com.ryan.models.User;
@@ -82,6 +84,7 @@ public class ApiServlet extends HttpServlet {
         PostRequestsHandler postRequestsHandler = new PostRequestsHandler(properties, requestDataAccess, gson);
         PostStatusHandler postStatusHandler = new PostStatusHandler(properties, requestDataAccess, userDataAccess, gson);
         PatchUserHandler patchUserHandler = new PatchUserHandler(properties, userDataAccess, gson);
+        PostUserHandler postUserHandler = new PostUserHandler(properties, userDataAccess, gson);
 
         javalinServlet = Javalin.createStandalone()
                 .before(ctx -> {
@@ -113,6 +116,7 @@ public class ApiServlet extends HttpServlet {
                     context.contentType("application/json");
                     context.result(gson.toJson(returnObj));
                 })
+                .post("/api/user", postUserHandler)
                 .get("/api/users", context -> {
                     int user = MainServlet.checkLogin(properties, context);
                     JsonElement returnObj = new JsonObject();
@@ -126,8 +130,18 @@ public class ApiServlet extends HttpServlet {
                             returnObj.getAsJsonObject().addProperty("error", "User is not a manager");
                             status = 403;
                         } else {
-                            List<User> users = userDataAccess.getAllItems().stream().filter(user1 -> user1.getUserType().equals(UserType.EMPLOYEE)).collect(Collectors.toList());
-                            returnObj = gson.toJsonTree(users);
+                            JsonArray jsonArray = new JsonArray();
+                            for (User emp : userDataAccess.getAllItems()) {
+                                if (!emp.getUserType().equals(UserType.EMPLOYEE)) {
+                                    continue;
+                                }
+                                JsonElement jsonElement = gson.toJsonTree(emp);
+                                if (emp.getAvatar() != null) {
+                                    jsonElement.getAsJsonObject().addProperty("avatar", emp.getAvatar().getImage64());
+                                }
+                                jsonArray.add(jsonElement);
+                            }
+                            returnObj = jsonArray;
                             status = 200;
                         }
                     }

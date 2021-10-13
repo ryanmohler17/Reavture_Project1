@@ -29,7 +29,7 @@ public class SqlUserAccess implements UserDataAccess {
     public Integer saveItem(User item) {
         if (item.getId() == -1) {
             try (Connection c = connector.newConnection()) {
-                PreparedStatement statement = c.prepareStatement("INSERT INTO \"user\" (first_name, last_name, username, email_address, password, user_type) VALUES (?. ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement statement = c.prepareStatement("INSERT INTO \"user\" (first_name, last_name, username, email_address, password, user_type) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 statement.setString(1, item.getFirstName());
                 statement.setString(2, item.getLastName());
                 statement.setString(3, item.getUserName());
@@ -89,13 +89,6 @@ public class SqlUserAccess implements UserDataAccess {
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
             User user = getUserFromResultSet(resultSet);
-            PreparedStatement imgStatement = c.prepareStatement("SELECT image_id FROM user_icon WHERE user_id = ?");
-            imgStatement.setInt(1, item);
-            ResultSet imgSet = imgStatement.executeQuery();
-            if (imgSet.next()) {
-                UUID uuid = UUID.fromString(imgSet.getString("image_id"));
-                user.setAvatar(new StoredImage(uuid, imageDataAccess.loadBase64Img(uuid)));
-            }
             return user;
         } catch (SQLException e) {
             logger.warn("Failed to get user", e);
@@ -142,6 +135,15 @@ public class SqlUserAccess implements UserDataAccess {
                 resultSet.getString("last_name"), UserType.values()[resultSet.getInt("user_type")]);
 
         user.setId(resultSet.getInt("id"));
+
+        Connection c = connector.newConnection();
+        PreparedStatement imgStatement = c.prepareStatement("SELECT image_id FROM user_icon WHERE user_id = ?");
+        imgStatement.setInt(1, user.getId());
+        ResultSet imgSet = imgStatement.executeQuery();
+        if (imgSet.next()) {
+            UUID uuid = UUID.fromString(imgSet.getString("image_id"));
+            user.setAvatar(new StoredImage(uuid, imageDataAccess.loadBase64Img(uuid)));
+        }
 
         return user;
     }

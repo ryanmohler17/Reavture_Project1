@@ -9,6 +9,7 @@
     <script src="/ers/public/modal.js"></script>
     <script src="/ers/public/alerts.js"></script>
     <script src="/ers/public/nav.js"></script>
+    <script src="/ers/public/employees.js"></script>
 </head>
 
 <body>
@@ -34,7 +35,10 @@
     </header>
     <main>
         <div id="employees">
-            
+
+        </div>
+        <div class="form-buttons">
+            <button id="create" class="btn btn-primary">Create User</button>
         </div>
     </main>
     <div id="modal-wrapper" class="modal-wrapper hidden">
@@ -44,6 +48,42 @@
                 <div class="modal-content-wrapper" id="modals">
                     <div class="modal hidden" id="create-modal">
                         <div class="content">
+                            <h2>Create User</h2>
+                            <div class="row">
+                                <label class="form-item">
+                                    <span>First Name</span>
+                                    <input type="text" id="fName" />
+                                </label>
+                                <label class="form-item">
+                                    <span>Last Name</span>
+                                    <input type="text" id="lName" />
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div>
+                                    <label class="form-item">
+                                        <span>User Name</span>
+                                        <input type="text" id="username" />
+                                    </label>
+                                    <label class="form-item">
+                                        <span>Email</span>
+                                        <input type="email" id="email" />
+                                    </label>
+                                </div>
+                                <div>
+                                    <label class="form-item">
+                                        <span>Password</span>
+                                        <input type="password" id="password" />
+                                    </label>
+                                    <label class="form-item">
+                                        <span>Repeat Password</span>
+                                        <input type="password" id="repeat" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-buttons">
+                                <button id="add" class="btn btn-submit">Add User</button>
+                            </div>
                         </div>
                     </div>
                 </div>

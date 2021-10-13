@@ -180,6 +180,25 @@ public class MainServlet extends HttpServlet {
                     context.redirect("/ers/login");
                     context.removeCookie("token");
                 })
+                .get("/employees", context -> {
+                    int login = checkLogin(properties, context);
+                    if (login == -1) {
+                        context.redirect("login");
+                        return;
+                    }
+
+                    User user = userDataAccess.getItem(login);
+
+                    if (!user.getUserType().equals(UserType.MANAGER)) {
+                        context.redirect("/ers/");
+                        return;
+                    }
+
+                    String path = getServletContext().getRealPath("employees.html");
+
+                    String employees = String.join("\n", Files.readAllLines(Paths.get(path)));
+                    context.html(employees);
+                })
                 .get("/public/{item}", context -> {
                     String path = getServletContext().getRealPath("public/" + context.pathParam("item"));
                     String file = String.join("\n", Files.readAllLines(Paths.get(path)));
