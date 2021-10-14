@@ -26,7 +26,7 @@
             <url>https://maven.weeryan17.com/repository/snapshots</url>
         </repository>
     </repositories>
-
+    
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
